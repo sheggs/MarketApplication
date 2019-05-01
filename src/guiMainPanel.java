@@ -81,7 +81,14 @@ public class guiMainPanel extends JFrame{
 			}
 		});		
 		JButton btnManageUsers = new JButton("Manage Users");
-		btnManageUsers.setActionCommand("");
+		btnManageUsers.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				main_panel.removeAll();
+				main_panel.setLayout(null);
+				main_panel.setLayout(new guiManageUsers().setSidePanel(login,frame, panel, main_panel));
+
+			}
+		});
 		
 		JButton btnManageAdmins = new JButton("Manage Admins");
 		btnManageAdmins.addActionListener(new ActionListener() {

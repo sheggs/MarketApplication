@@ -78,20 +78,30 @@ public class User {
 			return true;
 		}
 	}
+	/**
+	 * 
+	 * @param code promotional code
+	 * @return A boolean value whether the product has been purchased
+	 */
 	public boolean purchaseBasket(String code) {
 		double totalPrice = 0;
 		boolean successful = false;
+		/** Looping through the basket to obtain the total price of the basket **/
 		for(Products p : getBasket().getBasket()) {
 			totalPrice += p.getPrice();
 		}
+		/** Ensuring the users balance is greater than the total price **/
 		if(totalPrice < getCurrentBalance()) {
+			/** Looping through the basket and setting every product's BuyerID to the user's **/
 			for(Products p : getBasket().getBasket()) {
-				DatabaseHandlerHSQL.getDatabase().Query("UPDATE products SET BuyerID = '"+ getUserID() +"' WHERE product_id = '"+p.getId()+"'");
-	
+				p.purchaseProduct(this);
 			}
+			/** Setting up the discount price **/
 			double discount = new PromotionalVoucherCodes().applyPromoCode(code);
 			double percentageOfCost = (100 - discount)/100;
+			/** Updating the account balance**/
 			updateBalance(-(totalPrice*percentageOfCost));
+			/** Emptying the basket **/
 			getBasket().dropBasket();
 			successful = true;
 		}

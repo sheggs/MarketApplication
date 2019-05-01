@@ -24,12 +24,14 @@ public class Products {
 	 * @param name Product name
 	 * @param description Product descripitoin
 	 * @param price Product Price
-	 * @return a boolean value wheather the product exists.
+	 * @return a boolean value whether the product exists.
 	 */
 	private boolean validateProduct(int id,String name, String description, double price) {
 		boolean valid = false;
-		ResultSet query = DatabaseHandlerHSQL.getDatabase().Query("SELECT * FROM products WHERE id = '"+id+"' AND name = '"+name+"' AND description = '"+description+"' AND price = '"+price+"'");
+		// Checking if all the fields exist in database
+		ResultSet query = DatabaseHandlerHSQL.getDatabase().Query("SELECT * FROM products WHERE product_id = '"+id+"' AND name = '"+name+"' AND description = '"+description+"' AND price = '"+price+"'");
 		try {
+			// If the row exists the product is valid
 			valid = query.next();
 			
 		} catch (SQLException e) {
@@ -37,6 +39,31 @@ public class Products {
 			e.printStackTrace();
 		}
 		return valid;
+	}
+	/**
+	 * 
+	 * @param login The user that is purchasing the product.
+	 */
+	public void purchaseProduct(User user) {
+		/** Setting the product as purchased **/
+		DatabaseHandlerHSQL.getDatabase().Query("UPDATE products SET BuyerID = '"+ user.getUserID() +"' WHERE product_id = '"+getId()+"'");
+	}
+	/**
+	 * 
+	 * @return A boolean value whether the product has been purchased.
+	 */
+	public boolean productPurchased() {
+		boolean exists = false;
+		/** Querying database to see if this product has been purchased **/
+		ResultSet query = DatabaseHandlerHSQL.getDatabase().Query("SELECT * FROM products WHERE product_id = '"+id+"' AND BuyerID IS NULL");
+		try {
+			/** This query has a row so this product has been purchased. **/
+			exists = query.next();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return exists;
 	}
 	public double getPrice() {
 		return this.price;
@@ -103,7 +130,6 @@ public class Products {
 	 * @return An array of the user ID and the username.
 	 */
 	public String[] getSeller() {
-		System.out.println("hi");
 		String[] sellerID = new String[2];
 		try {
 			DatabaseHandlerHSQL db =  DatabaseHandlerHSQL.getDatabase();
@@ -111,13 +137,15 @@ public class Products {
 			while(query.next()) {
 				sellerID[0] = (query.getString("user_id"));
 				sellerID[1] = (query.getString("username"));
-
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return sellerID;
+	}
+	public void deleteProduct() {
+		 DatabaseHandlerHSQL.getDatabase().executeQuery("DELETE FROM products WHERE product_id = '" + getId() +"'");
 	}
 	@Override
 	public boolean equals(Object o) {

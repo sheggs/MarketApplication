@@ -34,7 +34,6 @@ public class Login{
 	}
 	public boolean isAdmin() {
 		boolean isAdmin = false;
-		System.out.println(this.userID);
 		ResultSet query = db.Query("SELECT * FROM admin WHERE user_id = '"+this.userID+"'");
 		try {
 			if(query.next()) {

@@ -53,11 +53,7 @@ public class DatabaseHandlerHSQL {
 				this.statement.close();
 			}
 			
-			System.out.println("Closed the connection to the database");
 		} catch (Exception e) {
-			System.out
-					.print("ERROR-Failed to close the connection to the database");
-			throw new RuntimeException(e);
 		}
 	}
 
@@ -175,7 +171,6 @@ public class DatabaseHandlerHSQL {
 
 					gettingUserID.next();
 					userId = Integer.parseInt(gettingUserID.getString("user_id"));
-					System.out.println(userId);
 
 					PreparedStatement preparedStatement = this.con.prepareStatement("INSERT INTO admin (privilidge_level,user_id) VALUES (?,?)");
 					preparedStatement.setInt(1,privilidgeLevel);
