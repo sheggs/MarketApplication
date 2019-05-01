@@ -34,6 +34,9 @@ public class guiMainMenu {
 	private JFrame frame;
 	private JTextField textField;
 	private JTextField promoCode;
+	private JTextField txtamount;
+	private JTextField txtPrecentageOff;
+	private JTextField generatedCode;
 
 	/**
 	 * Launch the application.
@@ -87,115 +90,77 @@ public class guiMainMenu {
 				.addComponent(panel, GroupLayout.DEFAULT_SIZE, 556, Short.MAX_VALUE)
 		);
 		
-		JLabel yourAccountTitle = new JLabel("Your account");
-		yourAccountTitle.setFont(new Font("Tahoma", Font.PLAIN, 26));
-		
-		JLabel label = new JLabel("Products on market");
-		label.setFont(new Font("Tahoma", Font.PLAIN, 17));
-		
-		JScrollPane scrollPane = new JScrollPane();
-		
-		JLabel productsPurchasedTitle = new JLabel("Purchased Products");
-		productsPurchasedTitle.setFont(new Font("Tahoma", Font.PLAIN, 17));
-		
-		JTextArea productsPurchasedTextArea = new JTextArea();
-		
-		JLabel productsAwatingTitle = new JLabel("Products awaiting apporval");
-		productsAwatingTitle.setFont(new Font("Tahoma", Font.PLAIN, 17));
-		
-		JTextArea textArea = new JTextArea();
-		
-		JLabel yourDetailsLabel = new JLabel("Your Details");
-		yourDetailsLabel.setFont(new Font("Tahoma", Font.PLAIN, 17));
-		
-		JLabel nameLable = new JLabel("Name: {NAME}");
-		nameLable.setFont(new Font("Tahoma", Font.PLAIN, 17));
-		
-		JLabel balanceLabel = new JLabel("Balance: $0");
-		balanceLabel.setFont(new Font("Tahoma", Font.PLAIN, 17));
-		
-		JLabel emailLabel = new JLabel("Email:test@test.com");
-		emailLabel.setFont(new Font("Tahoma", Font.PLAIN, 17));
-		
-		JTextField promoCode = new JTextField();
-		promoCode.setText("Top Up Voucher");
-		promoCode.setColumns(10);
+		JLabel generateCodeTitle = new JLabel("Generate Codes");
+		generateCodeTitle.setFont(new Font("Tahoma", Font.PLAIN, 26));
 		
 		JButton confirmVoucherBtn = new JButton("Confirm");
+		
+		txtamount = new JTextField();
+		txtamount.setText("\u00A3Amount");
+		txtamount.setColumns(10);
+		
+		txtPrecentageOff = new JTextField();
+		txtPrecentageOff.setText("Precentage off %");
+		txtPrecentageOff.setColumns(10);
+		
+		JButton button = new JButton("Confirm");
+		
+		JLabel lblTopupVoucher = new JLabel("Top-Up Voucher");
+		lblTopupVoucher.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		
+		JLabel lblPromotionalCode = new JLabel("Promotional Code");
+		lblPromotionalCode.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		
+		generatedCode = new JTextField();
+		generatedCode.setText("Generated Code");
+		generatedCode.setColumns(10);
 		GroupLayout gl_main_panel = new GroupLayout(main_panel);
 		gl_main_panel.setHorizontalGroup(
 			gl_main_panel.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_main_panel.createSequentialGroup()
-					.addGroup(gl_main_panel.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_main_panel.createSequentialGroup()
+					.addGroup(gl_main_panel.createParallelGroup(Alignment.TRAILING)
+						.addGroup(Alignment.LEADING, gl_main_panel.createSequentialGroup()
 							.addGap(166)
-							.addComponent(yourAccountTitle, GroupLayout.PREFERRED_SIZE, 170, GroupLayout.PREFERRED_SIZE))
-						.addGroup(gl_main_panel.createSequentialGroup()
-							.addGroup(gl_main_panel.createParallelGroup(Alignment.LEADING)
-								.addGroup(gl_main_panel.createSequentialGroup()
-									.addGap(50)
-									.addComponent(label, GroupLayout.PREFERRED_SIZE, 166, GroupLayout.PREFERRED_SIZE))
-								.addGroup(gl_main_panel.createSequentialGroup()
-									.addGap(29)
-									.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 200, GroupLayout.PREFERRED_SIZE)))
-							.addGap(48)
+							.addComponent(generateCodeTitle, GroupLayout.PREFERRED_SIZE, 212, GroupLayout.PREFERRED_SIZE))
+						.addGroup(Alignment.LEADING, gl_main_panel.createSequentialGroup()
+							.addGap(87)
 							.addGroup(gl_main_panel.createParallelGroup(Alignment.TRAILING)
-								.addComponent(productsPurchasedTitle, GroupLayout.PREFERRED_SIZE, 166, GroupLayout.PREFERRED_SIZE)
-								.addComponent(productsPurchasedTextArea, GroupLayout.PREFERRED_SIZE, 191, GroupLayout.PREFERRED_SIZE)))
-						.addGroup(gl_main_panel.createSequentialGroup()
-							.addGap(20)
-							.addComponent(productsAwatingTitle, GroupLayout.PREFERRED_SIZE, 231, GroupLayout.PREFERRED_SIZE)
-							.addGap(72)
-							.addComponent(yourDetailsLabel))
-						.addGroup(gl_main_panel.createSequentialGroup()
-							.addGap(31)
-							.addComponent(textArea, GroupLayout.PREFERRED_SIZE, 191, GroupLayout.PREFERRED_SIZE)
-							.addGap(44)
+								.addComponent(lblTopupVoucher)
+								.addGroup(gl_main_panel.createParallelGroup(Alignment.LEADING, false)
+									.addComponent(txtamount, Alignment.TRAILING)
+									.addComponent(confirmVoucherBtn, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 122, Short.MAX_VALUE)))
+							.addGap(52)
 							.addGroup(gl_main_panel.createParallelGroup(Alignment.LEADING)
-								.addComponent(emailLabel, GroupLayout.PREFERRED_SIZE, 229, GroupLayout.PREFERRED_SIZE)
-								.addComponent(balanceLabel, GroupLayout.PREFERRED_SIZE, 229, GroupLayout.PREFERRED_SIZE)
-								.addComponent(nameLable, GroupLayout.PREFERRED_SIZE, 229, GroupLayout.PREFERRED_SIZE)
-								.addGroup(gl_main_panel.createSequentialGroup()
-									.addComponent(promoCode, GroupLayout.PREFERRED_SIZE, 135, GroupLayout.PREFERRED_SIZE)
-									.addPreferredGap(ComponentPlacement.UNRELATED)
-									.addComponent(confirmVoucherBtn)))))
-					.addContainerGap(34, Short.MAX_VALUE))
+								.addComponent(lblPromotionalCode)
+								.addGroup(gl_main_panel.createParallelGroup(Alignment.TRAILING, false)
+									.addComponent(txtPrecentageOff)
+									.addComponent(button, GroupLayout.DEFAULT_SIZE, 122, Short.MAX_VALUE)))))
+					.addContainerGap(97, Short.MAX_VALUE))
+				.addGroup(gl_main_panel.createSequentialGroup()
+					.addGap(45)
+					.addComponent(generatedCode)
+					.addGap(76))
 		);
 		gl_main_panel.setVerticalGroup(
-			gl_main_panel.createParallelGroup(Alignment.LEADING)
+			gl_main_panel.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_main_panel.createSequentialGroup()
-					.addGroup(gl_main_panel.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_main_panel.createSequentialGroup()
-							.addComponent(yourAccountTitle, GroupLayout.PREFERRED_SIZE, 55, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(productsPurchasedTitle, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE))
-						.addGroup(gl_main_panel.createSequentialGroup()
-							.addGap(62)
-							.addComponent(label, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)))
-					.addGap(7)
-					.addGroup(gl_main_panel.createParallelGroup(Alignment.LEADING)
-						.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 175, GroupLayout.PREFERRED_SIZE)
-						.addComponent(productsPurchasedTextArea, GroupLayout.PREFERRED_SIZE, 194, GroupLayout.PREFERRED_SIZE))
-					.addPreferredGap(ComponentPlacement.RELATED)
+					.addContainerGap()
+					.addComponent(generateCodeTitle, GroupLayout.PREFERRED_SIZE, 55, GroupLayout.PREFERRED_SIZE)
+					.addGap(71)
 					.addGroup(gl_main_panel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(productsAwatingTitle, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
-						.addComponent(yourDetailsLabel, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE))
+						.addComponent(lblPromotionalCode, GroupLayout.PREFERRED_SIZE, 55, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblTopupVoucher, GroupLayout.PREFERRED_SIZE, 55, GroupLayout.PREFERRED_SIZE))
+					.addGap(18)
+					.addGroup(gl_main_panel.createParallelGroup(Alignment.BASELINE)
+						.addComponent(txtamount, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(txtPrecentageOff, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addGap(18)
 					.addGroup(gl_main_panel.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_main_panel.createSequentialGroup()
-							.addGap(18)
-							.addComponent(textArea, GroupLayout.PREFERRED_SIZE, 140, GroupLayout.PREFERRED_SIZE))
-						.addGroup(gl_main_panel.createSequentialGroup()
-							.addGap(4)
-							.addComponent(nameLable, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(balanceLabel, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(emailLabel, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
-							.addGap(18)
-							.addGroup(gl_main_panel.createParallelGroup(Alignment.BASELINE)
-								.addComponent(promoCode, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-								.addComponent(confirmVoucherBtn))))
-					.addContainerGap(32, Short.MAX_VALUE))
+						.addComponent(button, GroupLayout.DEFAULT_SIZE, 67, Short.MAX_VALUE)
+						.addComponent(confirmVoucherBtn, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+					.addGap(75)
+					.addComponent(generatedCode, GroupLayout.PREFERRED_SIZE, 37, GroupLayout.PREFERRED_SIZE)
+					.addGap(129))
 		);
 		main_panel.setLayout(gl_main_panel);
 		JLabel lblNewLabe3 = new JLabel("New label");

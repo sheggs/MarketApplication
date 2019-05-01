@@ -92,9 +92,19 @@ public class guiBasket {
 		}
 		totalPriceLabel.setText("Total £"+this.login.getUser().getBasket().getTotalPrice());
 		purchaseButton.addActionListener(new ActionListener() {
+			
 			public void actionPerformed(ActionEvent e) {
+				/** Getting the promo code from text box **/
+				String promoCode = promoSection.getText();
+				// Initalising the field
+				double promotionalValue = 0.0;
+				PromotionalVoucherCodes promoCodeValidator = new PromotionalVoucherCodes();
+				// Checking if code exists and is not in use.
+				if((promoCodeValidator.checkIfCodeExists(promoCode,CodeType.PROMOTIONAL_CODE)) && (!promoCodeValidator.checkIfCodeUsed(promoCode, CodeType.PROMOTIONAL_CODE))) {
+					promotionalValue = promoCodeValidator.getCodeValue(promoCode, CodeType.PROMOTIONAL_CODE);
+				}
+	
 				// Confirmation Frame
-				System.out.println("TT");
 				JFrame frame = new JFrame();
 				frame.setResizable(false);
 				frame.setSize(607, 296);
@@ -114,13 +124,13 @@ public class guiBasket {
 				JLabel lblNewLabel = new JLabel("Basket Price: +£"+login.getUser().getBasket().getTotalPrice());
 				lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 15));
 				
-				JLabel lblPromotionalCode = new JLabel("Promotional Code: -$3000");
+				JLabel lblPromotionalCode = new JLabel("Promotional Code: "+promotionalValue+"%");
 				lblPromotionalCode.setFont(new Font("Tahoma", Font.PLAIN, 15));
 				
 				JLabel accountBalanceLbl = new JLabel("Account Balance: £"+login.getUser().getCurrentBalance());
 				accountBalanceLbl.setFont(new Font("Tahoma", Font.PLAIN, 15));
 				
-				JLabel lblTotalPrice = new JLabel("Total Price: $0");
+				JLabel lblTotalPrice = new JLabel("Total Price: £"+((login.getUser().getBasket().getTotalPrice() * (100-promotionalValue))/100));
 				lblTotalPrice.setFont(new Font("Tahoma", Font.PLAIN, 15));
 				
 				JButton purchaseButton = new JButton("Purchase");
@@ -128,7 +138,8 @@ public class guiBasket {
 					
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						if(login.getUser().purchaseBasket()) {
+						
+						if(login.getUser().purchaseBasket(promoCode)) {
 							JOptionPane.showMessageDialog(new JFrame(),"Success. You now own the items. Your balance is £" +login.getUser().getCurrentBalance(), "Marketplace - Message",JOptionPane.PLAIN_MESSAGE);
 
 						}else {

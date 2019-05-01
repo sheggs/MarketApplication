@@ -65,23 +65,9 @@ public class guiRegisterProduct {
 					if(txtPrice.getText().matches("[0-9]+")) {
 						int price = Integer.parseInt(txtPrice.getText());
 						db.reestablishConnection();
-						try {
-							PreparedStatement registerProductStament = db.getCon().prepareStatement("INSERT INTO products (name,price,approval,description,SellerID) VALUES (?,?,?,?,?)");
-							registerProductStament.setString(1,username);
-							registerProductStament.setInt(2, price);
-							registerProductStament.setInt(3, 0);
-							registerProductStament.setString(4, description);
-							System.out.println(login.getUserID());
-							registerProductStament.setInt(5, login.getUserID());
-							registerProductStament.executeUpdate();
-							JOptionPane.showMessageDialog(new JFrame(), "Product is officially on the market.", "Successful.",JOptionPane.INFORMATION_MESSAGE);
+						Products.registerProduct(login, username,  price, description);
+						JOptionPane.showMessageDialog(new JFrame(), "Product is officially on the market.", "Successful.",JOptionPane.INFORMATION_MESSAGE);
 
-
-
-						} catch (SQLException e1) {
-							// TODO Auto-generated catch block
-							JOptionPane.showMessageDialog(new JFrame(), e1.getMessage(), "Error",JOptionPane.ERROR_MESSAGE);
-						}
 					}else {
 						// Error message is displayed
 						JOptionPane.showMessageDialog(new JFrame(), "Price is not formatted correctly", "Error",JOptionPane.ERROR_MESSAGE);

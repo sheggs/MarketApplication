@@ -16,6 +16,8 @@ public class DatabaseHandlerHSQL {
 		setUpEmailTable();
 		setUpProductTables();
 		setUpAdminTables();
+		setUpTopUpTable();
+		setUpPromotionalTable();
 		
 	}
 	public static DatabaseHandlerHSQL getDatabase() {
@@ -160,7 +162,6 @@ public class DatabaseHandlerHSQL {
 					
 			}else {
 				if(privilidgeLevel < yourPrivlidgeLevel) {
-					this.con = DriverManager.getConnection( this.url,"SA", "");
 					reestablishConnection();
 
 					this.statement.executeUpdate("INSERT INTO useraccount (admin,username,email,password,date_created,isBanned) VALUES (1,'"+ name+"','"+email+"','"+password+"',CURRENT_TIMESTAMP,0)");
@@ -201,10 +202,9 @@ public class DatabaseHandlerHSQL {
 		reestablishConnection();
 
 		try {
-			this.con = DriverManager.getConnection( this.url,"SA", "");
-
 			this.statement.executeUpdate("CREATE TABLE IF NOT EXISTS useraccount (user_id INTEGER GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), balance DOUBLE,admin SMALLINT,username VARCHAR(16),email VARCHAR(255),password VARCHAR(32),date_created TIMESTAMP,isBanned SMALLINT,PRIMARY KEY (user_id))");
-     		endConnection();
+			endConnection();
+	    	createAccount("Username", "email@email.com", "Password");
 
 		} catch (SQLException e) {
 			if (!e.getSQLState().equals("X0Y32") ){
@@ -214,9 +214,7 @@ public class DatabaseHandlerHSQL {
 	}
 	private void setUpProductTables() {
 		reestablishConnection();
-
 		try {
-			this.con = DriverManager.getConnection( this.url,"SA", "");
 
 			this.statement.executeUpdate(
 					"CREATE TABLE IF NOT EXISTS products (product_id INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),"
@@ -238,17 +236,60 @@ public class DatabaseHandlerHSQL {
 	}
 	private void setUpAdminTables() {
 		reestablishConnection();
-
 		try {
-			
-			this.con = DriverManager.getConnection( this.url,"SA", "");
-
 			this.statement.executeUpdate("CREATE TABLE IF NOT EXISTS Admin (admin_id INTEGER GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), "
 					+ "privilidge_level INT,"
 					+ "user_id INT REFERENCES useraccount (user_id),"
 					+ "PRIMARY KEY (admin_id))");
+     		endConnection();
+     		createAdminAccount(300,2000,"Admin", "admin@admin.com", "Password");
 
+		} catch (SQLException e) {
+			if (!e.getSQLState().equals("X0Y32") ){
+				e.printStackTrace();
+			}
+		}
+	}
+	/**
+	 * Setting up table to store top up codes.
+	 */
+	private void setUpTopUpTable() {
+		// Resetting database connection
+		reestablishConnection();
+		try {
+			// Creating the table.
+			this.statement.executeUpdate("CREATE TABLE IF NOT EXISTS topupvoucher (voucher_id INTEGER GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), "
+					+ "code VARCHAR(20),"
+					+ "value DOUBLE,"
+					+ "used SMALLINT,"
+					+ "admin_id INT REFERENCES admin (admin_id),"
+					+ "PRIMARY KEY (voucher_id))");
 
+			/** Dropping the database connection**/
+     		endConnection();
+
+		} catch (SQLException e) {
+			if (!e.getSQLState().equals("X0Y32") ){
+				e.printStackTrace();
+			}
+		}
+	}
+	/**
+	 * Setting up table to store top up codes.
+	 */
+	private void setUpPromotionalTable() {
+		// Resetting database connection
+		reestablishConnection();
+		try {
+			// Creating the table.
+			this.statement.executeUpdate("CREATE TABLE IF NOT EXISTS promotionalcode (promotional_id INTEGER GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), "
+					+ "code VARCHAR(20),"
+					+ "value DOUBLE,"
+					+ "used SMALLINT,"
+					+ "admin_id INT REFERENCES admin (admin_id),"
+					+ "PRIMARY KEY (promotional_id))");
+
+			/** Dropping the database connection**/
      		endConnection();
 
 		} catch (SQLException e) {
@@ -260,11 +301,7 @@ public class DatabaseHandlerHSQL {
 	
 	private void setUpEmailTable() {
 		reestablishConnection();
-
 		try {
-			this.con = DriverManager.getConnection( this.url,"SA", "");
-
-
 			this.statement.executeUpdate("CREATE TABLE IF NOT EXISTS emails (email_id INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),"
 					+ "email_text VARCHAR(255),"
 					+ "user_id INT NOT NULL REFERENCES useraccount (user_id),"
@@ -297,22 +334,22 @@ public class DatabaseHandlerHSQL {
 	}
 	public static void main(String[] args) {
 		DatabaseHandlerHSQL t = new DatabaseHandlerHSQL();
-//    	t.createAdminAccount(300,2000,"gh", "asdd[g[fghfg", "fgh");
-    	t.createAccount("Username", "Password", "Password");
+//    	t.createAdminAccount(300,2000,"Admin", "admin@admin.com", "Password");
+//    	t.createAccount("Username", "Password", "Password");
     	
-		try {
-			t.reestablishConnection();
-			ResultSet gettingUserID = t.getCon().createStatement().executeQuery("SELECT * FROM useraccount JOIN admin ON useraccount.user_id = admin.user_id");
-			while(gettingUserID.next() != false) {
-				System.out.println(gettingUserID.getInt(1));
-				//System.out.println(gettingUserID.getString(3));
-
-			}
-			t.endConnection();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			t.reestablishConnection();
+//			ResultSet gettingUserID = t.getCon().createStatement().executeQuery("SELECT * FROM useraccount JOIN admin ON useraccount.user_id = admin.user_id");
+//			while(gettingUserID.next() != false) {
+//				System.out.println(gettingUserID.getInt(1));
+//				//System.out.println(gettingUserID.getString(3));
+//
+//			}
+//			t.endConnection();
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 
 		
 	}

@@ -49,7 +49,8 @@ public class guiYourAccount {
 	}
 	
 	public GroupLayout setSidePanel(Login login,JFrame frame,JPanel panel,JPanel main_panel) {
-		
+		JTextField promoCode = new JTextField();
+		JButton confirmVoucherBtn = new JButton("Confirm");
 		JLabel yourDetailsLabel = new JLabel("Your Details");	
 		JLabel nameLable = new JLabel("Name: " + login.getUser().getUsername());
 		JLabel balanceLabel = new JLabel("Balance: £"+login.getUser().getCurrentBalance());
@@ -57,7 +58,24 @@ public class guiYourAccount {
 		
 		JTextArea productsPurchasedTextArea = new JTextArea();
 		JTextArea productsWaitingApprovalAndSold = new JTextArea();
+		
+		confirmVoucherBtn.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				PromotionalVoucherCodes topUp = new PromotionalVoucherCodes();
+				// Apply the code
+				if(topUp.applyTopUpCode(login,promoCode.getText())){
+					JOptionPane.showMessageDialog(new JFrame(), "Successful application. Your balance should be updated", "TopUp Voucher",JOptionPane.PLAIN_MESSAGE);
+					balanceLabel.setText("Balance: £"+login.getUser().getCurrentBalance());
+				}
+				// If there is an issue with the code.
+				else {
+					JOptionPane.showMessageDialog(new JFrame(),"Code has been used or is invalid." , "TopUp Voucher",JOptionPane.ERROR_MESSAGE);
 
+				}
+			}
+		});
 
 		/** Getting details of the users purchase and selling history **/
 		YourAccount getDetails = new YourAccount(login);
@@ -156,11 +174,9 @@ public class guiYourAccount {
 
 		emailLabel.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		
-		JTextField promoCode = new JTextField();
 		promoCode.setText("Top Up Voucher");
 		promoCode.setColumns(10);
-		
-		JButton confirmVoucherBtn = new JButton("Confirm");
+
 		
 		GroupLayout gl_main_panel = new GroupLayout(main_panel);
 		gl_main_panel.setHorizontalGroup(

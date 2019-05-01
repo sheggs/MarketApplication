@@ -89,10 +89,14 @@ public class guiMainPanel extends JFrame{
 			}
 		});
 		btnManageAdmins.setActionCommand("");
-		
+	
 		JButton btnGenerateCode = new JButton("Generate Code");
 		btnGenerateCode.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				main_panel.removeAll();
+				main_panel.setLayout(null);
+
+				main_panel.setLayout(new guiCodeGenerate().setSidePanel(login,frame, panel, main_panel));
 			}
 		});
 		btnGenerateCode.setActionCommand("");
@@ -139,6 +143,14 @@ public class guiMainPanel extends JFrame{
 					.addComponent(btnApproveProducts, GroupLayout.PREFERRED_SIZE, 41, GroupLayout.PREFERRED_SIZE)
 					.addGap(31))
 		);
+		if(login.getAdmin() == null) {
+			btnManageUsers.setVisible(false);
+			btnManageAdmins.setVisible(false);
+			btnGenerateCode.setVisible(false);
+			btnApproveProducts.setVisible(false);
+
+
+		}
 		panel.setLayout(gl_panel);
 		}
 		frame.getContentPane().setLayout(groupLayout);

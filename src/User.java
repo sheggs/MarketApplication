@@ -9,7 +9,7 @@ public class User {
 	private Date date;
 	private boolean admin;
 	private ShoppingBasket basket;
-	public User(int userID, String username, String email, Date date,boolean admin) {
+	public User(int userID, String username, String email, Date date) {
 		this.username = username;
 		this.userID = userID;
 		this.email = email;
@@ -78,30 +78,33 @@ public class User {
 			return true;
 		}
 	}
-	public boolean purchaseBasket() {
+	public boolean purchaseBasket(String code) {
 		double totalPrice = 0;
 		boolean successful = false;
 		for(Products p : getBasket().getBasket()) {
 			totalPrice += p.getPrice();
 		}
-		if(totalPrice > getCurrentBalance()) {
+		if(totalPrice < getCurrentBalance()) {
 			for(Products p : getBasket().getBasket()) {
 				DatabaseHandlerHSQL.getDatabase().Query("UPDATE products SET BuyerID = '"+ getUserID() +"' WHERE product_id = '"+p.getId()+"'");
-				updateBalance(-totalPrice);
+	
 			}
+			double discount = new PromotionalVoucherCodes().applyPromoCode(code);
+			double percentageOfCost = (100 - discount)/100;
+			updateBalance(-(totalPrice*percentageOfCost));
 			getBasket().dropBasket();
 			successful = true;
 		}
 		return successful;
 	}
 	
-	public static void main(String[] args) {
-		Login login = new Login("Password","Password");
-		User user = login.getUser();
-		System.out.println(user.updateBalance(100));
-
-		System.out.println(user.getCurrentBalance());
-	}
+//	public static void main(String[] args) {
+//		Login login = new Login("Password","Password");
+//		User user = login.getUser();
+//		System.out.println(user.updateBalance(100));
+//
+//		System.out.println(user.getCurrentBalance());
+//	}
 	
 
 }

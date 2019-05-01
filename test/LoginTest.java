@@ -4,24 +4,27 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.junit.jupiter.api.Test;
-
+/**
+ * 
+ * Ensure you have not modified anything with the default email@email.com account otherwise tests fail.
+ *
+ */
 class LoginTest {
 
 	@Test
 	void testLoginCreation() {
+		boolean exists = false;
 		DatabaseHandlerHSQL db = DatabaseHandlerHSQL.getDatabase();
+		// Creating dummy account
 		db.createAccount("TestAccount", "test@test", "password");
-		
-		ResultSet testingAccount = db.Query("SELECT * FROM useraccount WHERE email = 'test@test' AND password = 'password'");
-		boolean Result = false;
-		try {
-			 Result = testingAccount.next();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		// Checking if account exists in database.
+		Login login = new Login("test@test","password");
+		if(login !=null) {
+			exists = true;
 		}
 		
-		assertEquals(true, Result);
+		assertEquals(true, exists);
+		// Deleting account.
 		ResultSet testingAccount1 = db.Query("DELETE FROM useraccount WHERE email = 'test@test'");
 
 	}

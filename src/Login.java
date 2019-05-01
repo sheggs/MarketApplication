@@ -10,25 +10,41 @@ public class Login{
 	private String password = null;
 	private DatabaseHandlerHSQL db = DatabaseHandlerHSQL.getDatabase();
 	private User user = null;
+	private Admin admin = null;
 	public Login(String email, String password) {
 		this.email = email;
 		this.password = password;
 		ResultSet results = db.Query("SELECT * FROM useraccount WHERE email = '" + this.email + "' AND password = '" + this.password + "'");
 		try {
 			if(results.next()) {
-				boolean isAdmin = false;
 				this.userID = results.getInt("user_id");
-				System.out.println(this.userID);
-				if(results.getInt("admin") == 1) {
-					isAdmin = true;
+				this.user = new User(results.getInt("user_id"), results.getString("username"),results.getString("email") ,results.getDate("date_created"));
+				if(isAdmin()) {
+					this.admin = new Admin(results.getInt("user_id"), results.getString("username"),results.getString("email") ,results.getDate("date_created"));
 				}
-				this.user = new User(results.getInt("user_id"), results.getString("username"),results.getString("email") ,results.getDate("date_created"),isAdmin);
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
+	}
+	public Admin getAdmin() {
+		return this.admin;
+	}
+	public boolean isAdmin() {
+		boolean isAdmin = false;
+		System.out.println(this.userID);
+		ResultSet query = db.Query("SELECT * FROM admin WHERE user_id = '"+this.userID+"'");
+		try {
+			if(query.next()) {
+				isAdmin = true;
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return isAdmin;
 	}
 	public User getUser() {
 		return this.user;
@@ -54,10 +70,10 @@ public class Login{
 			return false;
 		}
 	}
-	public static void main(String[] args) {
-		Login a = new Login("Password","Password");
-		System.out.println(a.checkCredentials());
-	}
+//	public static void main(String[] args) {
+//		Login a = new Login("admin@admin.com","Password");
+//		System.out.println(a.isAdmin());
+//	}
 	
 
 }

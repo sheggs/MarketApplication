@@ -1,3 +1,4 @@
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -8,10 +9,34 @@ public class Products {
 	private String description;
 	private double price;
 	public Products(int id,String name, String description, double price) {
-		this.name = name;
-		this.id = id;
-		this.price = price;
-		this.description = description;
+		if(validateProduct( id, name,  description, price)){
+			this.name = name;
+			this.id = id;
+			this.price = price;
+			this.description = description;
+		 }else {
+			 throw new IllegalArgumentException("Product does not exist");
+		 }
+	}
+	/**
+	 * 
+	 * @param id Product id
+	 * @param name Product name
+	 * @param description Product descripitoin
+	 * @param price Product Price
+	 * @return a boolean value wheather the product exists.
+	 */
+	private boolean validateProduct(int id,String name, String description, double price) {
+		boolean valid = false;
+		ResultSet query = DatabaseHandlerHSQL.getDatabase().Query("SELECT * FROM products WHERE id = '"+id+"' AND name = '"+name+"' AND description = '"+description+"' AND price = '"+price+"'");
+		try {
+			valid = query.next();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return valid;
 	}
 	public double getPrice() {
 		return this.price;
@@ -24,6 +49,29 @@ public class Products {
 	}
 	public int getId() {
 		return this.id;
+	}
+	
+	public static boolean registerProduct(Login login,String name, int price,String description) {
+		boolean successful = false;
+		DatabaseHandlerHSQL db = DatabaseHandlerHSQL.getDatabase();
+		PreparedStatement registerProductStament;
+		try {
+			db.reestablishConnection();
+			registerProductStament = db.getCon().prepareStatement("INSERT INTO products (name,price,approval,description,SellerID) VALUES (?,?,?,?,?)");
+			registerProductStament.setString(1,name);
+			registerProductStament.setInt(2, price);
+			registerProductStament.setInt(3, 0);
+			registerProductStament.setString(4, description);
+			registerProductStament.setInt(5, login.getUserID());
+			registerProductStament.executeUpdate();
+			successful= true;
+			db.endConnection();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return successful;
+		
 	}
 	public boolean removeProduct() {
 		boolean successfulRemoval = false;
