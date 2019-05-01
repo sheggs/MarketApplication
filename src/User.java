@@ -36,6 +36,50 @@ public class User {
 		return this.username;
 	}
 	
+	/**
+	 * 
+	 * @return A boolean value whether the ban has been successful
+	 */
+	public boolean banUser() {
+		boolean banned = false;
+		/** Updating table to ban the user **/
+		if(DatabaseHandlerHSQL.getDatabase().executeQuery("UPDATE useraccount SET isBanned = 1 WHERE user_id = '"+getUserID()+"'")) {
+			banned = true;
+		}
+		return banned;
+	}
+	/**
+	 * 
+	 * @return A boolean value whether the unban has been successful
+	 */
+	public boolean unBanUser() {
+		boolean unbanned = false;
+		/** Updating table to unban the user **/
+		if(DatabaseHandlerHSQL.getDatabase().executeQuery("UPDATE useraccount SET isBanned = 0 WHERE user_id = '"+getUserID()+"'")) {
+			unbanned = true;
+		}
+		return unbanned;
+	}
+	/**
+	 * 
+	 * @return The users password
+	 */
+	public String getPassword() {
+		String password ="";
+		/** querying for the password **/
+		ResultSet queryPassword = DatabaseHandlerHSQL.getDatabase().Query("SELECT password FROM useraccount WHERE user_id = '" + this.userID +"'");
+		try {
+			/** Getting the first row and extracting the password **/
+			if(queryPassword.next()) {
+				password = queryPassword.getString("password");
+			}
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return password;
+	}
 	public boolean isBanned() {
 		DatabaseHandlerHSQL db = DatabaseHandlerHSQL.getDatabase();
 		ResultSet results = db.Query("SELECT * FROM useraccount WHERE user_id = '" + this.userID +"'");

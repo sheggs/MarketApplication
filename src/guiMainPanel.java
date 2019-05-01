@@ -85,7 +85,7 @@ public class guiMainPanel extends JFrame{
 			public void actionPerformed(ActionEvent e) {
 				main_panel.removeAll();
 				main_panel.setLayout(null);
-				main_panel.setLayout(new guiManageUsers().setSidePanel(login,frame, panel, main_panel));
+				main_panel.setLayout(new guiManageUsers(login.getAdmin()).setSidePanel(login,frame, panel, main_panel));
 
 			}
 		});

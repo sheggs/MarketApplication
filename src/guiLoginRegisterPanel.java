@@ -18,23 +18,6 @@ public class guiLoginRegisterPanel {
 	
 	
 	public GroupLayout setSecondaryPanel(JFrame frame,JPanel panel,JPanel main_panel) {
-		GroupLayout groupLayout = new GroupLayout(frame.getContentPane());
-		groupLayout.setHorizontalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(groupLayout.createSequentialGroup()
-					.addComponent(panel, GroupLayout.PREFERRED_SIZE, 216, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(main_panel, GroupLayout.DEFAULT_SIZE, 534, Short.MAX_VALUE)
-					.addContainerGap())
-		);
-		groupLayout.setVerticalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addComponent(main_panel, GroupLayout.DEFAULT_SIZE, 556, Short.MAX_VALUE)
-				.addComponent(panel, GroupLayout.DEFAULT_SIZE, 556, Short.MAX_VALUE)
-		);
-		
-		JButton btnNewButton_3 = new JButton("register");
-		
 		JTextField txtUsername = new JTextField();
 		txtUsername.setText("Username");
 		txtUsername.setColumns(10);
@@ -60,16 +43,60 @@ public class guiLoginRegisterPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				/** Creating an login object for the user **/
 				Login login = new Login(email_login.getText(),passwordLogin.getText());
+				/** Check if the login credentials are correct **/
 				if(login.checkCredentials()) {
-					frame.dispose();
-					new guiMainPanel(login);
+					/** Disposing old frame and creating a new frame with the user logged in **/
+					if(login.getUser().isBanned()) {
+						JOptionPane.showMessageDialog(new JFrame(),"You are banned from this market!", "Marketplace - Message",JOptionPane.ERROR_MESSAGE);
+					}else {
+						frame.dispose();
+						new guiMainPanel(login);
+					}
 				}else {
 					JOptionPane.showMessageDialog(new JFrame(),"Error login credentials incorrect!", "Marketplace - Message",JOptionPane.PLAIN_MESSAGE);
 
 				}
 			}
 		});
+		
+		JButton registerButton = new JButton("register");
+		registerButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String email = txtEmail.getText();
+				String password =txtPassword.getText();
+				String username = txtUsername.getText();
+				/** Creating the user account **/
+				if(DatabaseHandlerHSQL.getDatabase().createAccount(username, email, password)) {
+					JOptionPane.showMessageDialog(new JFrame(),"Succesful account creation", "Marketplace - Message",JOptionPane.PLAIN_MESSAGE);
+					
+				}else {
+					JOptionPane.showMessageDialog(new JFrame(),"Error credentials have already been used!", "Marketplace - Message",JOptionPane.ERROR_MESSAGE);
+
+				}
+				
+				
+			}
+		});
+		GroupLayout groupLayout = new GroupLayout(frame.getContentPane());
+		groupLayout.setHorizontalGroup(
+			groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addComponent(panel, GroupLayout.PREFERRED_SIZE, 216, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(main_panel, GroupLayout.DEFAULT_SIZE, 534, Short.MAX_VALUE)
+					.addContainerGap())
+		);
+		groupLayout.setVerticalGroup(
+			groupLayout.createParallelGroup(Alignment.LEADING)
+				.addComponent(main_panel, GroupLayout.DEFAULT_SIZE, 556, Short.MAX_VALUE)
+				.addComponent(panel, GroupLayout.DEFAULT_SIZE, 556, Short.MAX_VALUE)
+		);
+
+		
 		JLabel lblRegisterAccount = new JLabel("Register Account");
 		lblRegisterAccount.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		
@@ -82,7 +109,7 @@ public class guiLoginRegisterPanel {
 					.addGroup(gl_main_panel.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_main_panel.createSequentialGroup()
 							.addGap(41)
-							.addComponent(btnNewButton_3))
+							.addComponent(registerButton))
 						.addGroup(gl_main_panel.createSequentialGroup()
 							.addGap(23)
 							.addGroup(gl_main_panel.createParallelGroup(Alignment.LEADING)
@@ -131,7 +158,7 @@ public class guiLoginRegisterPanel {
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(txtPassword, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
 							.addGap(18)
-							.addComponent(btnNewButton_3))))
+							.addComponent(registerButton))))
 		);
 		return gl_main_panel;
 

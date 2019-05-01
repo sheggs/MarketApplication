@@ -151,46 +151,61 @@ public class DatabaseHandlerHSQL {
 	public Connection getCon() {
 		return con;
 	}
+	/**
+	 * 
+	 * @param privilidgeLevel The privilidge level the new admin should have.
+	 * @param yourPrivlidgeLevel The privilidge level of the current admin
+	 * @param name The name of the account
+	 * @param email The email of the account
+	 * @param password The password of the account
+	 * @return A boolean value whether the account has been created
+	 */
 	public boolean createAdminAccount(int privilidgeLevel,int yourPrivlidgeLevel,String name, String email, String password){
+		boolean successful = false;
 		try {
-			if(checkExistanceInDB("useraccount","username",username) || checkExistanceInDB("useraccount","email",email)){
-				return false;
-					
-			}else {
+			/** Checking if the credentials are in use **/
+			if(!(checkExistanceInDB("useraccount","username",username) || checkExistanceInDB("useraccount","email",email))){
+				/** Checking the current admins privilege level is greater **/
 				if(privilidgeLevel < yourPrivlidgeLevel) {
 					reestablishConnection();
-
+					/** Inserting account into database **/
 					this.statement.executeUpdate("INSERT INTO useraccount (admin,username,email,password,date_created,isBanned) VALUES (1,'"+ name+"','"+email+"','"+password+"',CURRENT_TIMESTAMP,0)");
-
 					int userId;
-					
-
-					
+					/** Getting the userid **/
 					ResultSet gettingUserID = this.statement.executeQuery("SELECT user_id FROM useraccount WHERE email = '"+email+"'");
-					
-
 					gettingUserID.next();
 					userId = Integer.parseInt(gettingUserID.getString("user_id"));
-
+					/** Adding the admin into the admin table **/
 					PreparedStatement preparedStatement = this.con.prepareStatement("INSERT INTO admin (privilidge_level,user_id) VALUES (?,?)");
 					preparedStatement.setInt(1,privilidgeLevel);
 					preparedStatement.setInt(2, userId);
 					preparedStatement.executeUpdate();
 		     		endConnection();
 
-					return true;
-				}else {
-					return false;
+		     		successful =  true;
 				}
 			}
-
 		} catch (SQLException e) {
 			e.printStackTrace();
-
-			// TODO Auto-generated catch block
-			return false;
+			successful =  false;
 		}
-
+		return successful;
+	}
+	public boolean upgradeAccount(User user,Admin admin,int privilidgeLevel) {
+		boolean successful = false;
+		if(privilidgeLevel < admin.getPrivilidgeLevel()) {
+			try {
+				reestablishConnection();
+				PreparedStatement preparedStatement = this.con.prepareStatement("INSERT INTO admin (privilidge_level,user_id) VALUES (?,?)");
+				preparedStatement.setInt(1,privilidgeLevel);
+				preparedStatement.setInt(2, user.getUserID());
+				preparedStatement.executeUpdate();
+	     		endConnection();
+	     		successful = true;
+			} catch (SQLException e) {
+			}
+		}
+		return successful;
 	}
 	
 	private void setUpUserTables() {
@@ -329,7 +344,7 @@ public class DatabaseHandlerHSQL {
 	}
 	public static void main(String[] args) {
 		DatabaseHandlerHSQL t = new DatabaseHandlerHSQL();
-//    	t.createAdminAccount(300,2000,"Admin", "admin@admin.com", "Password");
+   	//t.createAdminAccount(300,2000,"Gotcha", "russ@russ.com", "Password");
 //    	t.createAccount("Username", "Password", "Password");
     	
 //		try {
