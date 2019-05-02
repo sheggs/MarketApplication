@@ -22,7 +22,7 @@ public class guiManageAdmins {
 	public guiManageAdmins(Admin admin) {
 		this.admin = admin;
 	}
-	public void addAdmin(Login login,User user,JPanel jb) {
+	public void addAdmin(Login login,Admin targetAdmin,JPanel jb) {
 		temp.setLayout(new GridLayout(0,1));
 		JButton btn = new JButton("Manage Admin");
 		btn.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -30,10 +30,10 @@ public class guiManageAdmins {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				manageAdminPanel(admin,user);
+				manageAdminPanel(admin,targetAdmin);
 			}
 		});
-		JLabel l = new JLabel(" Name: " +user.getUsername() + " Email: " + user.getEmail());
+		JLabel l = new JLabel(" Name: " +targetAdmin.getUsername() + " Email: " + targetAdmin.getEmail());
 		l.setAlignmentX(Component.CENTER_ALIGNMENT);
 		temp.add(l);
 		temp.add(btn);
@@ -51,7 +51,7 @@ public class guiManageAdmins {
 		
 		for(Admin user : ManageUsers.getTotalAdmins()) {
 			/** Appending each product data **/
-			if(user.getPrivilidgeLevel() < admin.getPrivilidgeLevel()) {
+			if((user.getPrivilidgeLevel() < admin.getPrivilidgeLevel()) || (admin.getAdminID() == user.getAdminID()) ) {
 				addAdmin(login,user,containerPanel);
 
 			}
@@ -99,7 +99,7 @@ public class guiManageAdmins {
 	}
 	
 	
-	public void manageAdminPanel(Admin admin,User user) {
+	public void manageAdminPanel(Admin admin,Admin targetAdmin) {
 		JFrame frame = new JFrame();
 		frame.setVisible(true);
 		frame.setResizable(false);
@@ -108,18 +108,17 @@ public class guiManageAdmins {
 		frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 	
-		JLabel lblNewLabel = new JLabel("Managing "+user.getUsername()+" Account");
+		JLabel lblNewLabel = new JLabel("Managing "+targetAdmin.getUsername()+" Account");
 		JTextField nameTextField = new JTextField();
 		JTextField accountBalanceTextField = new JTextField();
 		JTextField emailTextField = new JTextField();
 		JTextField passwordField = new JTextField();
-		JTextField privilidgeLevel = new JTextField();
 		JButton btnSubmitForm = new JButton("Submit Form");
 		JButton banUnbanButton = new JButton("Ban");
-		JButton btnPromoteToAdmin = new JButton("Promote to Admin");
+		JButton btnDemoteAdmin = new JButton("Demote to user");
 
 		/** Setting banned text **/
-		if(user.isBanned()) {
+		if(targetAdmin.isBanned()) {
 			banUnbanButton.setText("Unban");
 		}
 		/** When the admin wants to update the users information **/
@@ -139,7 +138,7 @@ public class guiManageAdmins {
 				StringBuffer errors = new StringBuffer();
 				/** Checking if balance string is correctly defined if so the balance will update **/
 				if(accountBalance.matches("[0-9].*[0-9]+")) {
-					user.updateBalance(-user.getCurrentBalance() + Double.parseDouble(accountBalance));
+					targetAdmin.updateBalance(-targetAdmin.getCurrentBalance() + Double.parseDouble(accountBalance));
 					errors.append("Updated account balance \n");
 				}else {
 					/** Appending an error message to show the user **/
@@ -149,7 +148,7 @@ public class guiManageAdmins {
 				/** Checking if the username is not taken! **/
 				if(!db.checkExistanceInDB("useraccount", "username", name)) {
 					/** Updating username **/
-					db.executeQuery("UPDATE FROM useraccount SET username = '"+name +"' WHERE user_id = '"+user.getUserID()+"'");
+					db.executeQuery("UPDATE FROM useraccount SET username = '"+name +"' WHERE user_id = '"+targetAdmin.getUserID()+"'");
 					errors.append("Updated username \n");
 				}else {
 					/** Appending an error message to show the user **/
@@ -158,7 +157,7 @@ public class guiManageAdmins {
 				/** Checking if the email is not taken! **/
 				if(!db.checkExistanceInDB("useraccount", "email", email)) {
 					/** Updating email **/
-					db.executeQuery("UPDATE FROM useraccount SET email = '"+email +"' WHERE user_id = '"+user.getUserID()+"'");
+					db.executeQuery("UPDATE FROM useraccount SET email = '"+email +"' WHERE user_id = '"+targetAdmin.getUserID()+"'");
 					errors.append("Updated email \n");
 
 				}else {
@@ -178,11 +177,11 @@ public class guiManageAdmins {
 			public void actionPerformed(ActionEvent e) {
 				String message = "banned";
 				/** Checking if the user is banned**/
-				if(user.isBanned()) {
+				if(targetAdmin.isBanned()) {
 					message = "unbanned";
-					user.unBanUser();
+					targetAdmin.unBanUser();
 				}else {
-					user.banUser();
+					targetAdmin.banUser();
 				}
 				JOptionPane.showMessageDialog(new JFrame(), "You have " + message + " the user.", "Messages after updating", JOptionPane.ERROR_MESSAGE);
 				frame.dispose();
@@ -190,27 +189,23 @@ public class guiManageAdmins {
 			}
 		});
 		/** Making the user into an admin **/
-		btnPromoteToAdmin.addActionListener(new ActionListener() {
+		btnDemoteAdmin.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				/** Check if privilidge level only contains numbers **/
-				if(privilidgeLevel.getText().matches("[0-9]+")) {
-					if(DatabaseHandlerHSQL.getDatabase().upgradeAccount(user, admin, Integer.parseInt(privilidgeLevel.getText()))) {
-						JOptionPane.showMessageDialog(new JFrame(), "SUCCESS! USER IS NOW AN ADMIN", "Messages after updating", JOptionPane.PLAIN_MESSAGE);
-						frame.dispose();
-					}else {
-						JOptionPane.showMessageDialog(new JFrame(), "ERROR: Target privilidge level must be lower than yours! Or a database error has occured!", "Upgrade message", JOptionPane.ERROR_MESSAGE);
-					}
-				}else{
-					JOptionPane.showMessageDialog(new JFrame(), "ERROR: Your privilidge level is incorrectly formatted", "Upgrade message", JOptionPane.ERROR_MESSAGE);
+				/** Demoting the admin **/
+				if(DatabaseHandlerHSQL.getDatabase().demoteAdmin(admin)) {
+					JOptionPane.showMessageDialog(new JFrame(), admin.getUsername()+" has been demoted", "Messages after updating", JOptionPane.PLAIN_MESSAGE);
+				}else {
+					JOptionPane.showMessageDialog(new JFrame(), "ERROR occured when demoting ADMIN.", "Messages after updating", JOptionPane.ERROR_MESSAGE);
+
 				}
 			}
 		});
-		passwordField.setText(user.getPassword());
-		emailTextField.setText(user.getEmail());
-		accountBalanceTextField.setText(""+user.getCurrentBalance());
-		nameTextField.setText(user.getUsername());
+		passwordField.setText(targetAdmin.getPassword());
+		emailTextField.setText(targetAdmin.getEmail());
+		accountBalanceTextField.setText(""+targetAdmin.getCurrentBalance());
+		nameTextField.setText(targetAdmin.getUsername());
 		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		lblNewLabel.setBounds(254, 11, 187, 32);
 		frame.getContentPane().add(lblNewLabel);
@@ -254,16 +249,12 @@ public class guiManageAdmins {
 		banUnbanButton.setBounds(391, 86, 126, 23);
 		frame.getContentPane().add(banUnbanButton);
 		
-		btnPromoteToAdmin.setBounds(391, 124, 126, 23);
-		frame.getContentPane().add(btnPromoteToAdmin);
+		btnDemoteAdmin.setBounds(391, 124, 126, 23);
+		frame.getContentPane().add(btnDemoteAdmin);
 		
 		btnSubmitForm.setBounds(202, 225, 126, 23);
 		frame.getContentPane().add(btnSubmitForm);
 		
-		privilidgeLevel.setText("Privilidge Level");
-		privilidgeLevel.setColumns(10);
-		privilidgeLevel.setBounds(527, 125, 114, 20);
-		frame.getContentPane().add(privilidgeLevel);
 	}
 
 }

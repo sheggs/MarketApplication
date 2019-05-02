@@ -109,11 +109,17 @@ public class Products {
 		return successfulRemoval;
 
 	}
+	/**
+	 * 
+	 * @return An arraylist of all the products that have been approved
+	 */
 	public static ArrayList<Products> getProducts() {
 		ArrayList<Products> productList = new ArrayList<Products>();
 		try {
+			/** QUERYING the database to get all the procuts that have been approved and not purchased **/
 			DatabaseHandlerHSQL db =  DatabaseHandlerHSQL.getDatabase();
-			ResultSet query = db.Query("SELECT * FROM products WHERE approval = 0 AND BuyerID IS NULL");
+			ResultSet query = db.Query("SELECT * FROM products WHERE approval = 1 AND BuyerID IS NULL");
+			/** Looping through each row to get every product **/
 			while(query.next()) {
 				productList.add(new Products(query.getInt(1),query.getString(2),query.getString(5),query.getDouble(3)));
 			}
@@ -124,6 +130,35 @@ public class Products {
 			return null;
 		}
 	}
+	/**
+	 * 
+	 * @return An arraylist of all the products that have not been approved
+	 */
+	public static ArrayList<Products> getUnApprovedProducts() {
+		ArrayList<Products> productList = new ArrayList<Products>();
+		try {
+			/** QUERYING the database to get all the procuts that have been not been approved and not purchased **/
+			DatabaseHandlerHSQL db =  DatabaseHandlerHSQL.getDatabase();
+			ResultSet query = db.Query("SELECT * FROM products WHERE approval = 0 AND BuyerID IS NULL");
+			/** Looping through each row to get every product **/
+			while(query.next()) {
+				productList.add(new Products(query.getInt(1),query.getString(2),query.getString(5),query.getDouble(3)));
+			}
+			return productList;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+	}
+	public boolean approveProduct() {
+		boolean approved = false;
+		 if(DatabaseHandlerHSQL.getDatabase().executeQuery("UPDATE products SET approval = 1 WHERE product_id = '"+this.id+"'")) {
+			 approved = true;
+		 }
+		 return approved;
+	}
+
 	/**
 	 * 
 	 * @param id The product id

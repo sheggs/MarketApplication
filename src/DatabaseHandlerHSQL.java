@@ -191,11 +191,20 @@ public class DatabaseHandlerHSQL {
 		}
 		return successful;
 	}
+	/**
+	 * 
+	 * @param user The user that you want to upgrade
+	 * @param admin The admin that is trying to upgrade the user
+	 * @param privilidgeLevel the privilidge level you want the user to become.
+	 * @return A boolean value whether the operation has been successful.
+	 */
 	public boolean upgradeAccount(User user,Admin admin,int privilidgeLevel) {
 		boolean successful = false;
+		/** Checking if the admins privlidlge level is greater than the user you want to upgrade **/
 		if(privilidgeLevel < admin.getPrivilidgeLevel()) {
 			try {
 				reestablishConnection();
+				/** Inserting the user into the admin table aswell **/
 				PreparedStatement preparedStatement = this.con.prepareStatement("INSERT INTO admin (privilidge_level,user_id) VALUES (?,?)");
 				preparedStatement.setInt(1,privilidgeLevel);
 				preparedStatement.setInt(2, user.getUserID());
@@ -207,7 +216,19 @@ public class DatabaseHandlerHSQL {
 		}
 		return successful;
 	}
-	
+	/**
+	 * 
+	 * @param admin The admin that is being demoted
+	 * @return a boolean value whether the admin has been demoted
+	 */
+	public boolean demoteAdmin(Admin admin) {
+		boolean demoted = false;
+		/** DELETING the admin from the admin table **/
+		if(executeQuery("DELETE FROM admin WHERE admin_id = '"+admin.getAdminID()+"'")) {
+			demoted = true;
+		}
+		return demoted;
+	}
 	private void setUpUserTables() {
 		reestablishConnection();
 
@@ -232,7 +253,7 @@ public class DatabaseHandlerHSQL {
 					+ "price DOUBLE,"
 					+ "approval SMALLINT,"
 					+ "description VARCHAR(255),"
-					+ "SellerID INTEGER NOT NULL references useraccount(user_id),"
+					+ "SellerID INTEGER NOT NULL references useraccount(user_id) ON DELETE CASCADE,"
 					+ "BuyerID INTEGER references useraccount(user_id),"
 					+ "PRIMARY KEY (product_id))");
      		endConnection();
@@ -249,7 +270,7 @@ public class DatabaseHandlerHSQL {
 		try {
 			this.statement.executeUpdate("CREATE TABLE IF NOT EXISTS Admin (admin_id INTEGER GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), "
 					+ "privilidge_level INT,"
-					+ "user_id INT REFERENCES useraccount (user_id),"
+					+ "user_id INT REFERENCES useraccount (user_id) ON DELETE CASCADE,"
 					+ "PRIMARY KEY (admin_id))");
      		endConnection();
      		createAdminAccount(300,2000,"Admin", "admin@admin.com", "Password");
@@ -272,7 +293,7 @@ public class DatabaseHandlerHSQL {
 					+ "code VARCHAR(20),"
 					+ "value DOUBLE,"
 					+ "used SMALLINT,"
-					+ "admin_id INT REFERENCES admin (admin_id),"
+					+ "admin_id INT REFERENCES admin (admin_id) ON DELETE CASCADE,"
 					+ "PRIMARY KEY (voucher_id))");
 
 			/** Dropping the database connection**/
@@ -296,7 +317,7 @@ public class DatabaseHandlerHSQL {
 					+ "code VARCHAR(20),"
 					+ "value DOUBLE,"
 					+ "used SMALLINT,"
-					+ "admin_id INT REFERENCES admin (admin_id),"
+					+ "admin_id INT REFERENCES admin (admin_id) ON DELETE CASCADE,"
 					+ "PRIMARY KEY (promotional_id))");
 
 			/** Dropping the database connection**/
@@ -314,7 +335,7 @@ public class DatabaseHandlerHSQL {
 		try {
 			this.statement.executeUpdate("CREATE TABLE IF NOT EXISTS emails (email_id INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),"
 					+ "email_text VARCHAR(255),"
-					+ "user_id INT NOT NULL REFERENCES useraccount (user_id),"
+					+ "user_id INT NOT NULL REFERENCES useraccount (user_id) ON DELETE CASCADE,"
 					+ "everyone SMALLINT,"
 					+ "PRIMARY KEY (email_id))");
      		endConnection();
@@ -344,7 +365,7 @@ public class DatabaseHandlerHSQL {
 	}
 	public static void main(String[] args) {
 		DatabaseHandlerHSQL t = new DatabaseHandlerHSQL();
-   	//t.createAdminAccount(300,2000,"Gotcha", "russ@russ.com", "Password");
+//   	t.createAdminAccount(300,2000,"Gotcha", "admin@admin.com", "Password");
 //    	t.createAccount("Username", "Password", "Password");
     	
 //		try {

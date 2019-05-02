@@ -14,19 +14,22 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
 public class guiMainPanel extends JFrame{
-	
-	private Login login = null;
-	
+	private static guiMainPanel window = null;
+	private static Login login = null;
+	private static PanelType panelType = null;
+	JFrame frame = null;
+	JPanel panel = null;
+	JPanel main_panel = null;
 	public guiMainPanel(Login login) {
-		this.login = login;
-		JFrame frame = this;
+		guiMainPanel.login = login;
+		this.frame = this;
 		this.setVisible(true);
 		frame.setBounds(100, 100, 782, 595);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		JPanel panel = new JPanel();
+		panel = new JPanel();
 		panel.setBackground(SystemColor.textHighlight);
 		
-		JPanel main_panel = new JPanel();
+		this.main_panel = new JPanel();
 		GroupLayout groupLayout = new GroupLayout(frame.getContentPane());
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -48,44 +51,32 @@ public class guiMainPanel extends JFrame{
 			main_panel.setLayout(new guiLoginRegisterPanel().setSecondaryPanel(frame, panel, main_panel));
 		}else {
 		
-		
+			
+
 		JButton btnBuyItems = new JButton("Buy Items");
 		btnBuyItems.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				main_panel.removeAll();
-				main_panel.setLayout(new BoxLayout(main_panel, BoxLayout.X_AXIS));
-				new guiProductListing(login).setPanel(main_panel);
-				main_panel.setVisible(false);
-				main_panel.setVisible(true);
+				buyItemsPanel();
 			}
 		});		
 		JButton btnSellItems = new JButton("Sell Items");
 		btnSellItems.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				main_panel.removeAll();
-				main_panel.setLayout(null);
-
-				main_panel.setLayout(new guiRegisterProduct().setSecondaryPanel(login,frame, panel, main_panel));
-
+				sellProductPanel();
 			}
 		});
 		
 		JButton btnMyAccount = new JButton("My Account");
 		btnMyAccount.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				main_panel.removeAll();
-				main_panel.setLayout(null);
-
-				main_panel.setLayout(new guiYourAccount().setSidePanel(login,frame, panel, main_panel));
+				myAccountPanel();
 
 			}
 		});		
 		JButton btnManageUsers = new JButton("Manage Users");
 		btnManageUsers.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				main_panel.removeAll();
-				main_panel.setLayout(null);
-				main_panel.setLayout(new guiManageUsers(login.getAdmin()).setSidePanel(login,frame, panel, main_panel));
+				manageUsersPanel();
 
 			}
 		});
@@ -93,27 +84,25 @@ public class guiMainPanel extends JFrame{
 		JButton btnManageAdmins = new JButton("Manage Admins");
 		btnManageAdmins.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				main_panel.removeAll();
-				main_panel.setLayout(null);
-				main_panel.setLayout(new guiManageAdmins(login.getAdmin()).setSidePanel(login,frame, panel, main_panel));
+				manageAdminsPanel();
 			}
 		});
-		btnManageAdmins.setActionCommand("");
 	
 		JButton btnGenerateCode = new JButton("Generate Code");
 		btnGenerateCode.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				main_panel.removeAll();
-				main_panel.setLayout(null);
-
-				main_panel.setLayout(new guiCodeGenerate().setSidePanel(login,frame, panel, main_panel));
+				generateCodePanel();
 			}
 		});
-		btnGenerateCode.setActionCommand("");
 		
 		JButton btnApproveProducts = new JButton("Approve Product");
 		btnApproveProducts.setFont(new Font("Tahoma", Font.PLAIN, 9));
 		btnApproveProducts.setActionCommand("");
+		btnApproveProducts.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				approveProductPanel();
+			}
+		});
 		GroupLayout gl_panel = new GroupLayout(panel);
 		gl_panel.setHorizontalGroup(
 			gl_panel.createParallelGroup(Alignment.LEADING)
@@ -166,8 +155,99 @@ public class guiMainPanel extends JFrame{
 		frame.getContentPane().setLayout(groupLayout);
 
 	}
-	public static void main(String[] args) {
-		new guiMainPanel(null);
+	public static guiMainPanel getFrame(Login login) {
+		if(window == null) {
+			window = new guiMainPanel(login);
+		}
+		return window;
+	}
+	public void buyItemsPanel() {
+		/** Setting the panel type just incase for refreshes **/
+		panelType = PanelType.BUY_ITEMS;
+		System.out.println(panelType);
+		main_panel.removeAll();
+		main_panel.setLayout(new BoxLayout(main_panel, BoxLayout.X_AXIS));
+		new guiProductListing(login).setPanel(main_panel);
+		main_panel.setVisible(false);
+		main_panel.setVisible(true);
+	}
+	public void sellProductPanel() {
+		/** Setting the panel type just incase for refreshes **/
+		panelType = PanelType.SELL_ITEMS;
+		main_panel.removeAll();
+		main_panel.setLayout(null);
+		main_panel.setLayout(new guiRegisterProduct().setSecondaryPanel(login,frame, panel, this.main_panel));
+	}
+	public void myAccountPanel() {
+		/** Setting the panel type just incase for refreshes **/
+		this.panelType = PanelType.MY_ACCOUNT;
+		main_panel.removeAll();
+		main_panel.setLayout(null);
+		main_panel.setLayout(new guiYourAccount().setSidePanel(login,frame, panel,this.main_panel));
+	}
+	public void manageUsersPanel() {
+		/** Setting the panel type just incase for refreshes **/
+		panelType = PanelType.MANAGE_USERS;
+		main_panel.removeAll();
+		main_panel.setLayout(null);
+		main_panel.setLayout(new guiManageUsers(login.getAdmin()).setSidePanel(login,frame, panel, this.main_panel));
+	}
+	public void manageAdminsPanel() {
+		/** Setting the panel type just incase for refreshes **/
+		panelType = PanelType.MANAGE_ADMINS;
+		main_panel.removeAll();
+		main_panel.setLayout(null);
+		main_panel.setLayout(new guiManageAdmins(login.getAdmin()).setSidePanel(login,frame, panel, this.main_panel));
+	}
+	public void generateCodePanel() {
+		/** Setting the panel type just incase for refreshes **/
+		panelType = PanelType.GENERATE_CODE;
+		main_panel.removeAll();
+		main_panel.setLayout(null);
+		main_panel.setLayout(new guiCodeGenerate().setSidePanel(login,frame, panel, this.main_panel));
+	}
+	public void approveProductPanel() {
+		/** Setting the panel type just incase for refreshes **/
+		panelType = PanelType.APPROVE_PRODUCT;
+		main_panel.removeAll();
+		main_panel.setLayout(null);
+		main_panel.setLayout(new guiApproveProducts(login.getAdmin()).setSidePanel(login,frame, panel, this.main_panel));
+	}
+	public PanelType getPanelType() {
+		return panelType;
+	}
+	public void refreshPanel() {
+			System.out.println(login);
+		if(this.panelType == PanelType.APPROVE_PRODUCT) {
+			main_panel.setLayout(new guiManageAdmins(login.getAdmin()).setSidePanel(login,frame, panel, this.main_panel));
+
+		}
+		else if(this.panelType == PanelType.BUY_ITEMS) {	
+			guiMainPanel grabFrame = guiMainPanel.getFrame(login);
+			grabFrame.buyItemsPanel();
+		}
+		else if(this.panelType == PanelType.GENERATE_CODE) {
+			guiMainPanel grabFrame = guiMainPanel.getFrame(login);
+			grabFrame.generateCodePanel();
+		}
+		else if(this.panelType == PanelType. MANAGE_ADMINS) {
+			guiMainPanel grabFrame = guiMainPanel.getFrame(login);
+			grabFrame.manageAdminsPanel();
+		}
+				
+		else if(this.panelType == PanelType.MANAGE_USERS) {
+			guiMainPanel grabFrame = guiMainPanel.getFrame(login);
+			grabFrame.manageUsersPanel();
+		}
+		else if(this.panelType == PanelType.MY_ACCOUNT) {
+			guiMainPanel grabFrame = guiMainPanel.getFrame(login);
+			grabFrame.myAccountPanel();
+		}
+		else if(this.panelType == PanelType.SELL_ITEMS) {
+			guiMainPanel grabFrame = guiMainPanel.getFrame(login);
+			grabFrame.sellProductPanel();
+		}
+		
 	}
 
 }

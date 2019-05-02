@@ -138,7 +138,7 @@ public class guiBasket {
 					
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						
+						System.out.println(login.getUser().getCurrentBalance());
 						if(login.getUser().purchaseBasket(promoCode)) {
 							JOptionPane.showMessageDialog(new JFrame(),"Success. You now own the items. Your balance is £" +login.getUser().getCurrentBalance(), "Marketplace - Message",JOptionPane.PLAIN_MESSAGE);
 
