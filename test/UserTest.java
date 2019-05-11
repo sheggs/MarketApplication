@@ -1,15 +1,19 @@
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.assertEquals;
 
-import org.junit.jupiter.api.Test;
+import java.sql.ResultSet;
+
+import org.junit.Test;
+
+
 /**
  * 
  * Ensure you have not modified anything with the default email@email.com account otherwise tests fail.
  *
  */
-class UserTest {
+public class UserTest {
 
 	@Test
-	void testUserCreation() {
+	public void testUserCreation() {
 		Login login = new Login("email@email.com","Password");
 		User user = login.getUser();
 		assertEquals(user.getUserID(),1);
@@ -17,7 +21,7 @@ class UserTest {
 		assertEquals(user.getUsername(),"Username");
 		assertEquals(user.isBanned(), false);
 	}
-	void testAccountBalanceUpdate() {
+	public void testAccountBalanceUpdate() {
 		Login login = new Login("email@email.com","Password");
 		User user = login.getUser();
 		double futureBalance = user.getCurrentBalance() + 100;

@@ -1,11 +1,11 @@
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.assertEquals;
 
 import java.sql.ResultSet;
-import java.sql.SQLException;
 
-import org.junit.FixMethodOrder;
-import org.junit.jupiter.api.Test;
-import org.junit.runners.MethodSorters;
+import org.junit.Test;
+
+
+
 /**
  * 
  * Ensure you have not modified anything with the default email@email.com account otherwise tests fail.
@@ -13,7 +13,7 @@ import org.junit.runners.MethodSorters;
  * Set running order by name since they must run in this specified order.
  */
 
-class AdminTest {
+public class AdminTest {
 	/**
 	 * Creating an admin account. Checking if that is made successfully.
 	 */
@@ -43,7 +43,7 @@ class AdminTest {
 			isAdmin = true;
 		}
 		
-		assertEquals(true, isAdmin);
+		assertEquals(false, isAdmin);
 	}
 	/**
 	 * Deleting the admin account.

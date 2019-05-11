@@ -1,10 +1,14 @@
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.assertEquals;
+
+import java.sql.ResultSet;
+
+import org.junit.Test;
+
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.junit.FixMethodOrder;
-import org.junit.jupiter.api.Test;
 import org.junit.runners.MethodSorters;
 /**
  * 
@@ -14,9 +18,9 @@ import org.junit.runners.MethodSorters;
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 
-class YourAccountTest {
+public class YourAccountTest {
 	@Test
-	void test1CreationDummyProducts() {
+	public void test1CreationDummyProducts() {
 		Login login = new Login("email@email.com","Password");
 		User user = login.getUser();
 		boolean dummyProductExists = false;
@@ -32,7 +36,7 @@ class YourAccountTest {
 		Products.registerProduct(login,"0x129xsid90", 22,"RandomProduct Description");
 	}
 	@Test
-	void test2awaitingApprovalTest() {
+	public void test2awaitingApprovalTest() {
 		Login login = new Login("email@email.com","Password");
 		int productid = -1;
 		ResultSet query = DatabaseHandlerHSQL.getDatabase().Query("SELECT * FROM products WHERE name = '0x129xsid90'");
@@ -50,18 +54,18 @@ class YourAccountTest {
 		assertEquals(new YourAccount(login).getProductsAwaitingApproval().get(0), product);
 	}
 	@Test
-	void test3ProductInAccount() {
+	public void test3ProductInAccount() {
 		Login login = new Login("email@email.com","Password");
 		User user = login.getUser();
 		YourAccount youraccount = new YourAccount(login);
 		Products dummyProduct = youraccount.getProductsAwaitingApproval().get(0);
 		assertEquals(dummyProduct.getName(),"0x129xsid90");
-		assertEquals(dummyProduct.getPrice(),22);
+		assertEquals(dummyProduct.getPrice(),22,0);
 		assertEquals(dummyProduct.getDescription(),"RandomProduct Description");
 	}
 	
 	@Test
-	void test4purchaseDummyProductTest() {
+	public void test4purchaseDummyProductTest() {
 		Login login = new Login("email@email.com","Password");
 		int productid = -1;
 		ResultSet query = DatabaseHandlerHSQL.getDatabase().Query("SELECT * FROM products WHERE name = '0x129xsid90'");

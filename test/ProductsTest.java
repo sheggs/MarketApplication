@@ -1,12 +1,16 @@
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.assertEquals;
 
-import org.junit.jupiter.api.Test;
+import java.sql.ResultSet;
+
+import org.junit.Test;
+
+
 /**
  * 
  * Ensure you have not modified anything with the default email@email.com account otherwise tests fail.
  *
  */
-class ProductsTest {
+public class ProductsTest {
 
 	@Test
 	void testProductsCreation() {

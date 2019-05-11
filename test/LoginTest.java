@@ -1,18 +1,18 @@
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.assertEquals;
 
 import java.sql.ResultSet;
-import java.sql.SQLException;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
+
 /**
  * 
  * Ensure you have not modified anything with the default email@email.com account otherwise tests fail.
  *
  */
-class LoginTest {
+public class LoginTest {
 
 	@Test
-	void testLoginCreation() {
+	public void testLoginCreation() {
 		boolean exists = false;
 		DatabaseHandlerHSQL db = DatabaseHandlerHSQL.getDatabase();
 		// Creating dummy account
