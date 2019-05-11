@@ -78,7 +78,7 @@ public class Products {
 		return this.id;
 	}
 	
-	public static boolean registerProduct(Login login,String name, int price,String description) {
+	public static boolean registerProduct(Login login,String name, double price,String description) {
 		boolean successful = false;
 		DatabaseHandlerHSQL db = DatabaseHandlerHSQL.getDatabase();
 		PreparedStatement registerProductStament;
@@ -86,7 +86,7 @@ public class Products {
 			db.reestablishConnection();
 			registerProductStament = db.getCon().prepareStatement("INSERT INTO products (name,price,approval,description,SellerID) VALUES (?,?,?,?,?)");
 			registerProductStament.setString(1,name);
-			registerProductStament.setInt(2, price);
+			registerProductStament.setDouble(2, price);
 			registerProductStament.setInt(3, 0);
 			registerProductStament.setString(4, description);
 			registerProductStament.setInt(5, login.getUserID());

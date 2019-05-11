@@ -14,7 +14,10 @@ public class ProductsTest {
 
 	@Test
 	void testProductsCreation() {
-		
+		// Creating the user account. Database handeler prevents any duplications!
+		DatabaseHandlerHSQL.getDatabase().createAccount("Username", "email@email.com", "Password");
+		Products.registerProduct(new Login("email@email.com","Password"), "Chicken", 20.30, "Succulent chicken! Very good quality!");
+
 	}
 
 }
