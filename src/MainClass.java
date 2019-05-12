@@ -2,10 +2,8 @@
 public class MainClass {
 
 	public static void main(String[] args) {
+		// Creating the frame.
 		guiMainPanel.getFrame(null);
-//		while(true) {
-//			System.out.println(guiMainPanel.getFrame().getPanelType());
-//		}
 	}
 	
 

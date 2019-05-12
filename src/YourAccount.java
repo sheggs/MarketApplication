@@ -3,6 +3,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class YourAccount {
+	/** Initialising the fields **/
 	private Login login = null;
 	public YourAccount(Login login) {
 		this.login = login;
@@ -85,13 +86,5 @@ public class YourAccount {
 				return productsSold;
 	}
 
-	
-//	public static void main(String[] args) {
-//		System.out.println("hi");
-//		YourAccount y =  new YourAccount(new Login("Password","Password"));
-//		ArrayList<Products> p = y.getProductsPurchased();
-//		System.out.println(p.size());
-//		System.out.println(y.getProductsSold().size());
-//		
-//	}
+
 }

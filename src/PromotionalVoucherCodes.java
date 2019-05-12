@@ -2,6 +2,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class PromotionalVoucherCodes {
+	/**
+	 * The base is a array of characters that will be used to generate the codes
+	 */
 	public static String base = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890@-/";
 	DatabaseHandlerHSQL db = DatabaseHandlerHSQL.getDatabase();
 	
@@ -9,10 +12,16 @@ public class PromotionalVoucherCodes {
 	
 	}
 	
+	/**
+	 * 
+	 * @return A randomly generated code.
+	 */
 	public String generateRandomCode() {
+		/** Number of characters needed **/
 		int numberRequired = 10;
 		String voucherCode = "";
 		for(int j = 0;j<10;j++) {
+			/** Appending random characters **/
 			voucherCode += Character.toString(base.charAt((int) (Math.random()*base.length())));
 
 		}
@@ -76,11 +85,21 @@ public class PromotionalVoucherCodes {
 		}
 		return used;
 	}
+	
+	/**
+	 * 
+	 * @param code The randomly generated code.
+	 * @param type The type of code.
+	 * @return A double value of the code's value;.
+	 */
 	public double getCodeValue(String code,CodeType type) {
 		double amount = 0;
 		try {
+			/** Querying for the code **/
 			ResultSet query = DatabaseHandlerHSQL.getDatabase().Query("SELECT * FROM "+type.getTableName()+" WHERE code = '"+code + "'");
+			/** Checking if the query exists **/
 			if (query.next()) {
+				/** Getting the code's value **/
 				amount = query.getDouble("value");
 			}
 		} catch (SQLException e) {
@@ -89,20 +108,39 @@ public class PromotionalVoucherCodes {
 		}
 		return amount;
 	}
+	
+	/**
+	 * 
+	 * @param value The value of the code.
+	 * @param admin_id The admin's id.
+	 * @param type The type of code.
+	 * @return The code that is generated.
+	 */
 	public String generateCode(double value,int admin_id,CodeType type) {
+		/** Generated code **/
 		String code = generateRandomCode();
+		/** Checking if the code already exists **/
 		if(!checkIfCodeExists(code,type)) {
+			/** Inserting the query into the database **/
 			db.executeQuery("INSERT INTO "+type.getTableName()+" (code,value,admin_id,used) VALUES ('"+code+"','" + value + "','" + admin_id +"',0)");
 		}else {
 			code = null;
 		}
 		return code;
 	}
+	/**
+	 * 
+	 * @param code The code you want to check
+	 * @param type The type of code
+	 * @return A boolean value whether the code exists
+	 */
 	public boolean checkIfCodeExists(String code,CodeType type) {
 		boolean exists = false;
+		/** Finding the code in the database. **/
 		ResultSet checkCode = db.Query("SELECT * FROM "+type.getTableName()+" WHERE code = '"+code+"'");
 		try {
 			if(checkCode.next()) {
+				/** Found the code so set the return value to true **/
 				exists = true;
 			}
 		} catch (SQLException e) {
@@ -112,8 +150,5 @@ public class PromotionalVoucherCodes {
 		
 		return exists;
 	}
-//	public static void main(String[] args) {
-//		System.out.println(new PromotionalVoucherCodes().generateRandomCode());
-//	}
 
 }

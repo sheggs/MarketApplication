@@ -60,7 +60,7 @@ public class guiApproveProducts {
 			}
 		});
 		/** Label that shows the products details **/
-		JLabel l = new JLabel(product.getName() + " Desc: " + product.getDescription() + " Price £" +product.getPrice());
+		JLabel l = new JLabel(product.toString());
 		l.setAlignmentX(Component.CENTER_ALIGNMENT);
 		/** Adding each component to the frame **/
 		temp.add(l);

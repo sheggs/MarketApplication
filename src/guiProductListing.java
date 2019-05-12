@@ -91,8 +91,8 @@ public class guiProductListing {
 				}
 			}
 		});
-		/** The label that displays the prodducts information. **/
-		JLabel l = new JLabel(product.getName() + " Desc: " + product.getDescription() + " Price £" +product.getPrice());
+		/** The label that displays the products information. **/
+		JLabel l = new JLabel(product.toString());
 		l.setAlignmentX(Component.CENTER_ALIGNMENT);
 		temp.add(l);
 		temp.add(btn);

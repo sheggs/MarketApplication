@@ -4,11 +4,21 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class Products {
-	private int id;
-	private String name;
-	private String description;
-	private double price;
+	/** Initialising the fields **/
+	private int id = 0;
+	private String name = null;
+	private String description = null;
+	private double price = 0;
+	
+	/**
+	 * 
+	 * @param id The id of the product
+	 * @param name The name of the product
+	 * @param description The description of the product.
+	 * @param price The price of the product.
+	 */
 	public Products(int id,String name, String description, double price) {
+		/** Checking if the product exists in the database **/
 		if(validateProduct( id, name,  description, price)){
 			this.name = name;
 			this.id = id;
@@ -65,33 +75,65 @@ public class Products {
 		}
 		return exists;
 	}
+	
+	/**
+	 * 
+	 * @return The price of the product.
+	 */
 	public double getPrice() {
 		return this.price;
 	}
+	/**
+	 * 
+	 * @return The description of the product.
+	 */
 	public String getDescription() {
 		return this.description;
 	}
+	/**
+	 * 
+	 * @return The name of the product
+	 */
 	public String getName() {
 		return this.name;
 	}
+	/**
+	 * 
+	 * @return The id of the product.
+	 */
 	public int getId() {
 		return this.id;
 	}
-	
+	/**
+	 * 
+	 * @param login The login details of the user that wants to register a product.
+	 * @param name The name of the product
+	 * @param price The price of the product
+	 * @param description The description of the product.
+	 * @return A boolean value whether this has been successful.
+	 */
 	public static boolean registerProduct(Login login,String name, double price,String description) {
 		boolean successful = false;
+		/** Getting the database **/
 		DatabaseHandlerHSQL db = DatabaseHandlerHSQL.getDatabase();
+		/** Initialising the statement variable **/
 		PreparedStatement registerProductStament;
 		try {
+			/** Restarting connection **/
 			db.reestablishConnection();
+			/** Setting up the prepared statement **/
 			registerProductStament = db.getCon().prepareStatement("INSERT INTO products (name,price,approval,description,SellerID) VALUES (?,?,?,?,?)");
+			/** Filling out each variable inside the prepared statement **/
 			registerProductStament.setString(1,name);
 			registerProductStament.setDouble(2, price);
 			registerProductStament.setInt(3, 0);
 			registerProductStament.setString(4, description);
 			registerProductStament.setInt(5, login.getUserID());
+			/** Execute the updated **/
 			registerProductStament.executeUpdate();
+			/** Set the boolean value to true if there is no SQLException **/
 			successful= true;
+			/** End the connection to the database **/
 			db.endConnection();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -100,10 +142,17 @@ public class Products {
 		return successful;
 		
 	}
+	/**
+	 * 
+	 * @return A boolean value whether product has been deleted.
+	 */
 	public boolean removeProduct() {
 		boolean successfulRemoval = false;
+		/** Getting the database **/
 		DatabaseHandlerHSQL db =  DatabaseHandlerHSQL.getDatabase();
+		/** Executing query to delete the product **/
 		if(db.executeQuery("DELETE FROM products WHERE product_id = '"+ this.id + "'")) {
+			/** Setting return value to true as the query has been successful **/
 			successfulRemoval = true;
 		}
 		return successfulRemoval;
@@ -116,7 +165,7 @@ public class Products {
 	public static ArrayList<Products> getProducts() {
 		ArrayList<Products> productList = new ArrayList<Products>();
 		try {
-			/** QUERYING the database to get all the procuts that have been approved and not purchased **/
+			/** QUERYING the database to get all the products that have been approved and not purchased **/
 			DatabaseHandlerHSQL db =  DatabaseHandlerHSQL.getDatabase();
 			ResultSet query = db.Query("SELECT * FROM products WHERE approval = 1 AND BuyerID IS NULL");
 			/** Looping through each row to get every product **/
@@ -151,8 +200,13 @@ public class Products {
 			return null;
 		}
 	}
+	/**
+	 * 
+	 * @return A boolean value whether the product has been approved.
+	 */
 	public boolean approveProduct() {
 		boolean approved = false;
+		/** Updating the approval variable to true **/
 		 if(DatabaseHandlerHSQL.getDatabase().executeQuery("UPDATE products SET approval = 1 WHERE product_id = '"+this.id+"'")) {
 			 approved = true;
 		 }
@@ -165,12 +219,14 @@ public class Products {
 	 * @return An array of the user ID and the username.
 	 */
 	public String[] getSeller() {
-		/** Initalising the array **/
+		/** Initialising the array **/
 		String[] sellerID = new String[2];
 		try {
+			/** Querying the database for the product **/
 			DatabaseHandlerHSQL db =  DatabaseHandlerHSQL.getDatabase();
 			ResultSet query = db.Query("SELECT * FROM products JOIN useraccount ON products.SellerID = useraccount.user_id WHERE products.product_id = '"+this.id+"'");
 			while(query.next()) {
+				/** Storing the ID and name of the seller **/
 				sellerID[0] = (query.getString("user_id"));
 				sellerID[1] = (query.getString("username"));
 			}
@@ -180,23 +236,31 @@ public class Products {
 		}
 		return sellerID;
 	}
+	/** 
+	 * A function to delete the product
+	 */
 	public void deleteProduct() {
+		/** Deleting the product **/
 		 DatabaseHandlerHSQL.getDatabase().executeQuery("DELETE FROM products WHERE product_id = '" + getId() +"'");
 	}
+	/** Overriding the equals function to compare using the product id **/
 	@Override
 	public boolean equals(Object o) {
+		// If the object is null an exception is run.
 		if(o == null) {
 			throw new IllegalArgumentException("Cannot be null");
 		}
 		boolean isEqual = false;
+		/** Checking if both id values are the same **/
 		if(this.id ==((Products)o).getId()) {
+			/** True is returned as both objects refrence the same product **/
 			isEqual = true;
 		}
 		return isEqual;
 	}
+	/** Overriding the toString function **/
 	@Override
 	public String toString() {
-		// TODO Auto-generated method stub
 		return ("ID:" + this.getId() + " Name: " + this.getName() + " Description: "+this.getDescription() + " Price £:" + this.getPrice());
 	}
 	
