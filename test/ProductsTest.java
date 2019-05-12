@@ -12,7 +12,7 @@ import org.junit.Test;
  *
  */
 public class ProductsTest {
-
+	
 	@Test
 	public void testProductsCreation() {
 		// Creating the user account. Database handeler prevents any duplications!
@@ -22,29 +22,48 @@ public class ProductsTest {
 		Products dummyProduct = null;
 		
 		try {
+			// Querying for the product id
 			ResultSet query = DatabaseHandlerHSQL.getDatabase().Query("SELECT * FROM products WHERE name = 'xT3asd2asdq'");
 			while(query.next()) {
-				System.out.println(query.getInt("product_id"));
-				System.out.println(query.getString("name"));
-				System.out.println(query.getString("description"));
-				System.out.println(query.getDouble("price"));
-
-
+				// Creating the dummy product
 				dummyProduct = new Products(query.getInt("product_id"),"xT3asd2asdq",  "yTaSqusjam",20.30);
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
 		boolean doesProductExist = false;
+		// Looping through every product that is not approved in the database.
 		for(Products p : Products.getUnApprovedProducts()) {
-			System.out.println(p.getName());
+			// Checking if the dummy object exists
 			if(p.equals(dummyProduct)) {
-				System.out.println("ASDSA");
 				doesProductExist = true;
 			}
 		}
+		// Asserts that the product exists
 		assertEquals(true, doesProductExist);
+
+	}
+	
+	@Test
+	public void testProductObject() {
+		Products dummyProduct = null;
+		try {
+			// Querying for the product id
+			ResultSet query = DatabaseHandlerHSQL.getDatabase().Query("SELECT * FROM products WHERE name = 'xT3asd2asdq'");
+			while(query.next()) {
+				// Creating the dummy product
+				dummyProduct = new Products(query.getInt("product_id"),"xT3asd2asdq",  "yTaSqusjam",20.30);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		// Checking if the getters and setters work properly.
+		assertEquals(dummyProduct.getName(), "xT3asd2asdq");
+		assertEquals(dummyProduct.getDescription(), "yTaSqusjam");
+		assertEquals(dummyProduct.getPrice(), 20.30,0);
 
 	}
 
