@@ -233,7 +233,7 @@ public class DatabaseHandlerHSQL {
 		reestablishConnection();
 
 		try {
-			this.statement.executeUpdate("CREATE TABLE IF NOT EXISTS useraccount (user_id INTEGER GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), balance DOUBLE,admin SMALLINT,username VARCHAR(16),email VARCHAR(255),password VARCHAR(32),date_created TIMESTAMP,isBanned SMALLINT,PRIMARY KEY (user_id))");
+			this.statement.executeUpdate("CREATE TABLE IF NOT EXISTS useraccount (user_id INTEGER GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), balance DOUBLE,admin SMALLINT,username VARCHAR(255),email VARCHAR(255),password VARCHAR(32),date_created TIMESTAMP,isBanned SMALLINT,PRIMARY KEY (user_id))");
 			endConnection();
 	    	createAccount("Username", "email@email.com", "Password");
 
