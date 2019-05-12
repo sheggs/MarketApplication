@@ -2,7 +2,7 @@ import java.sql.*;
 import java.util.*; 
 public class DatabaseHandlerHSQL {
 	/**
-	 * Initalising fields with connection details.
+	 * Initialising fields with connection details.
 	 */
 	private String url = "jdbc:hsqldb:file:db_data/marketplace;create=true;shutdown=true";
 	private String username = "root";
@@ -11,6 +11,7 @@ public class DatabaseHandlerHSQL {
 	private static DatabaseHandlerHSQL db = null;
 	Connection con;
 	public DatabaseHandlerHSQL() {
+		/** Creating all the tables in the database **/
 		reestablishConnection();
 		setUpUserTables();
 		setUpEmailTable();
@@ -20,6 +21,10 @@ public class DatabaseHandlerHSQL {
 		setUpPromotionalTable();
 		
 	}
+	/**
+	 * Setting up a singleton.
+	 * @return The database object.
+	 */
 	public static DatabaseHandlerHSQL getDatabase() {
 		if(db == null) {
 			db = new DatabaseHandlerHSQL();
@@ -28,16 +33,22 @@ public class DatabaseHandlerHSQL {
 			return db;
 		}
 	}
+	/**
+	 * Reconnecting to the database.
+	 */
 	public void reestablishConnection() {
 		try {
-			if((con == null) || (con.isClosed())){
+			/** Checking if the connection is closed or has not been created yet **/
+			if((this.con == null)||(this.con.isClosed())){
+				/** Setting up the database connection **/
 				this.con = DriverManager.getConnection( this.url,"SA", "");
+				/** Checking if the statement object is null or is closed **/
 				if (this.statement == null || this.statement.isClosed()) {
+					/** Creating the statement **/
 					this.statement = con.createStatement();
 					this.statement.execute("SET FILES WRITE DELAY FALSE");
 				}
 			}
-
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 		}
@@ -46,9 +57,11 @@ public class DatabaseHandlerHSQL {
 	
 	public void endConnection() {
 		try {
+			/** Closing the connection **/
 			if (this.con != null) {
 				this.con.close();
 			}
+			/** Closing the statement **/
 			if (this.statement != null) {
 				this.statement.close();
 			}
@@ -56,24 +69,37 @@ public class DatabaseHandlerHSQL {
 		} catch (Exception e) {
 		}
 	}
-
+	/**
+	 * 
+	 * @return The statement object.
+ 	 */
 	public Statement getStatement() {
 		return this.statement;
 	}
 	
+	/**
+	 * 
+	 * @param sql The sql code.
+	 * @return If the query has been succesfully executed.
+	 */
 	public boolean executeQuery(String sql) {
+		// Restarting connection 
 		reestablishConnection();
 		boolean succesfulExecution = false;
 		DatabaseHandlerHSQL db =  DatabaseHandlerHSQL.getDatabase();
 		try {
+			/** Executing the sql statement **/
 			db.getStatement().execute(sql);
+			/** Make the boolean value true since there are no SQLExceptions so far **/
 			succesfulExecution = true;
 
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			/** Set the variable to false as there has been an error **/
 			succesfulExecution = false;
 		}
+		/** Ended database connection **/
 		endConnection();
 		return succesfulExecution;
 	}
@@ -90,9 +116,11 @@ public class DatabaseHandlerHSQL {
 
 		try {
 			 successfulCreation = false;
+			 /** Checking if the username and email has already been used to prevent any clashes when logging in  **/
 			if(checkExistanceInDB("useraccount","username",username) || checkExistanceInDB("useraccount","email",email)){
 				successfulCreation= false;
 			}else {
+				// Reestablishing the connection to the database.
 				reestablishConnection();
 
 				// Creating account since the user does not exist
@@ -229,24 +257,35 @@ public class DatabaseHandlerHSQL {
 		}
 		return demoted;
 	}
+	/**
+	 * Setting up the user tables.
+	 */
 	private void setUpUserTables() {
+		/** Restarting connection **/
 		reestablishConnection();
-
 		try {
+			/** Creating the user table if it does not exist **/
 			this.statement.executeUpdate("CREATE TABLE IF NOT EXISTS useraccount (user_id INTEGER GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), balance DOUBLE,admin SMALLINT,username VARCHAR(255),email VARCHAR(255),password VARCHAR(32),date_created TIMESTAMP,isBanned SMALLINT,PRIMARY KEY (user_id))");
+			/** Ending the connection **/
 			endConnection();
+			/** Creating default account **/
 	    	createAccount("Username", "email@email.com", "Password");
 
 		} catch (SQLException e) {
+			/** Ignoring a table duplicate error **/
 			if (!e.getSQLState().equals("X0Y32") ){
 				e.printStackTrace();
 			}
 		}
 	}
+	/**
+	 * Setting up the products tables.
+	 */
 	private void setUpProductTables() {
+		/** Restarting connection **/
 		reestablishConnection();
 		try {
-
+			/** Creating the products table if it does not exist **/
 			this.statement.executeUpdate(
 					"CREATE TABLE IF NOT EXISTS products (product_id INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),"
 					+ "name VARCHAR(255),"
@@ -256,26 +295,33 @@ public class DatabaseHandlerHSQL {
 					+ "SellerID INTEGER NOT NULL references useraccount(user_id) ON DELETE CASCADE,"
 					+ "BuyerID INTEGER references useraccount(user_id),"
 					+ "PRIMARY KEY (product_id))");
+			/** Ending the connection **/
      		endConnection();
 
 
 		} catch (SQLException e) {
+			/** Ignoring a table duplicate error **/
 			if (!e.getSQLState().equals("X0Y32") ){
 				e.printStackTrace();
 			}
 		}
 	}
 	private void setUpAdminTables() {
+		/** Restarting connection **/
 		reestablishConnection();
 		try {
+			/** Creating the admin table if it does not exist **/
 			this.statement.executeUpdate("CREATE TABLE IF NOT EXISTS Admin (admin_id INTEGER GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), "
 					+ "privilidge_level INT,"
 					+ "user_id INT REFERENCES useraccount (user_id) ON DELETE CASCADE,"
 					+ "PRIMARY KEY (admin_id))");
+			/** Ending the connection **/
      		endConnection();
+     		/** Creating default admin account **/
      		createAdminAccount(300,2000,"Admin", "admin@admin.com", "Password");
 
 		} catch (SQLException e) {
+			/** Ignoring a table duplicate error **/
 			if (!e.getSQLState().equals("X0Y32") ){
 				e.printStackTrace();
 			}
@@ -300,6 +346,7 @@ public class DatabaseHandlerHSQL {
      		endConnection();
 
 		} catch (SQLException e) {
+			/** Ignoring a table duplicate error **/
 			if (!e.getSQLState().equals("X0Y32") ){
 				e.printStackTrace();
 			}
@@ -324,35 +371,50 @@ public class DatabaseHandlerHSQL {
      		endConnection();
 
 		} catch (SQLException e) {
+			/** Ignoring a table duplicate error **/
 			if (!e.getSQLState().equals("X0Y32") ){
 				e.printStackTrace();
 			}
 		}
 	}
-	
+	/**
+	 * Setting up the email table
+	 */
 	private void setUpEmailTable() {
+		// Resetting database connection
 		reestablishConnection();
 		try {
+			/** Creating the email table **/
 			this.statement.executeUpdate("CREATE TABLE IF NOT EXISTS emails (email_id INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),"
 					+ "email_text VARCHAR(255),"
 					+ "user_id INT NOT NULL REFERENCES useraccount (user_id) ON DELETE CASCADE,"
 					+ "everyone SMALLINT,"
 					+ "PRIMARY KEY (email_id))");
+			/** Dropping connection **/
      		endConnection();
 
-
 		} catch (SQLException e) {
+			/** Ignoring a table duplicate error **/
 			if (!e.getSQLState().equals("X0Y32") ){
 				e.printStackTrace();
 			}
 		}
 	}
 	
+	/**
+	 * 
+	 * @param sql The sql code you want to query.
+	 * @return The resultset of the query.
+	 */
 	public ResultSet Query(String sql) {
+		/** Initalising the ResultSet **/
 		ResultSet results = null;
 		try {
+			/** Restarting connection**/
 			reestablishConnection();
+			/** Executing the query **/
 			results = this.statement.executeQuery(sql);
+			/** Dropping connection **/
 	 		endConnection();
 
 		} catch (SQLException e) {
@@ -362,27 +424,6 @@ public class DatabaseHandlerHSQL {
 
  		return results;
 
-	}
-	public static void main(String[] args) {
-		DatabaseHandlerHSQL t = new DatabaseHandlerHSQL();
-//   	t.createAdminAccount(300,2000,"Gotcha", "admin@admin.com", "Password");
-//    	t.createAccount("Username", "Password", "Password");
-    	
-//		try {
-//			t.reestablishConnection();
-//			ResultSet gettingUserID = t.getCon().createStatement().executeQuery("SELECT * FROM useraccount JOIN admin ON useraccount.user_id = admin.user_id");
-//			while(gettingUserID.next() != false) {
-//				System.out.println(gettingUserID.getInt(1));
-//				//System.out.println(gettingUserID.getString(3));
-//
-//			}
-//			t.endConnection();
-//		} catch (SQLException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-
-		
 	}
 
 
