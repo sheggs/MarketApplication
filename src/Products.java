@@ -165,6 +165,7 @@ public class Products {
 	 * @return An array of the user ID and the username.
 	 */
 	public String[] getSeller() {
+		/** Initalising the array **/
 		String[] sellerID = new String[2];
 		try {
 			DatabaseHandlerHSQL db =  DatabaseHandlerHSQL.getDatabase();
