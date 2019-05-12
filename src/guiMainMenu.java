@@ -30,7 +30,9 @@ import javax.swing.SwingConstants;
 import javax.swing.JTextArea;
 
 public class guiMainMenu {
-
+	/**
+	 * Initialising the variables.
+	 */
 	private JFrame frame;
 	private JTextField textField;
 	private JTextField promoCode;
@@ -38,18 +40,18 @@ public class guiMainMenu {
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					guiMainMenu window = new guiMainMenu();
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+//	public static void main(String[] args) {
+//		EventQueue.invokeLater(new Runnable() {
+//			public void run() {
+//				try {
+//					guiMainMenu window = new guiMainMenu();
+//					window.frame.setVisible(true);
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		});
+//	}
 
 	/**
 	 * Create the application.

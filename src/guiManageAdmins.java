@@ -17,12 +17,23 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
 public class guiManageAdmins {
+	/** Initialising the variables **/
 	JPanel temp = new JPanel();
 	private Admin admin = null;
+	/**
+	 * 
+	 * @param admin The admin that wants to manage the admins 
+	 */
 	public guiManageAdmins(Admin admin) {
 		this.admin = admin;
 	}
-	public void addAdmin(Login login,Admin targetAdmin,JPanel jb) {
+	/**
+	 * 
+	 * @param login The login of the admin.
+	 * @param targetAdmin The admin you want to targer.
+	 * @param jb The temporary panel that will store this information.
+	 */
+	public void addAdmin(Login login,Admin targetAdmin,JPanel tempPanel) {
 		temp.setLayout(new GridLayout(0,1));
 		JButton btn = new JButton("Manage Admin");
 		btn.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -37,27 +48,42 @@ public class guiManageAdmins {
 		l.setAlignmentX(Component.CENTER_ALIGNMENT);
 		temp.add(l);
 		temp.add(btn);
-		jb.add(temp);
+		tempPanel.add(temp);
 	}
 	
+	
+	
+	/**
+	 * 
+	 * @param login The login object of the currently logged in admin/user.
+	 * @param frame The frame of the application.
+	 * @param panel Temporary panel.
+	 * @param main_panel The panel that stores all the components.
+	 * @return
+	 */
 	public GroupLayout setSidePanel(Login login,JFrame frame,JPanel panel,JPanel main_panel) {
+		/**
+		 * Creating the visible components
+		 */
 		JLabel manageUserTitle = new JLabel("Manage Users");
 		manageUserTitle.setFont(new Font("Tahoma", Font.PLAIN, 26));
-		
-		
-		GroupLayout gl_main_panel = new GroupLayout(main_panel);
 		/** Panel is a container for the user management **/
 		JPanel containerPanel = new JPanel();
-		
-		for(Admin user : ManageUsers.getTotalAdmins()) {
+		JScrollPane scrollPane = new JScrollPane(containerPanel);
+		/** Creating the GroupLayout **/
+		GroupLayout groupLayout = new GroupLayout(frame.getContentPane());
+		GroupLayout gl_main_panel = new GroupLayout(main_panel);
+
+		/** Looping through every admin that exists **/
+		for(Admin user : ManageUsersAndAdmins.getTotalAdmins()) {
 			/** Appending each product data **/
 			if((user.getPrivilidgeLevel() < admin.getPrivilidgeLevel()) || (admin.getAdminID() == user.getAdminID()) ) {
+				/** Adding the admin into the list of admins **/
 				addAdmin(login,user,containerPanel);
 
 			}
 		}
-		JScrollPane scrollPane = new JScrollPane(containerPanel);
-		GroupLayout groupLayout = new GroupLayout(frame.getContentPane());
+		
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
@@ -98,8 +124,13 @@ public class guiManageAdmins {
 	
 	}
 	
-	
+	/**
+	 * 
+	 * @param adminthe admin that is logged in 
+	 * @param targetAdmin The target admin.
+	 */
 	public void manageAdminPanel(Admin admin,Admin targetAdmin) {
+		/** Creating the frame that displays the admin's details **/
 		JFrame frame = new JFrame();
 		frame.setVisible(true);
 		frame.setResizable(false);
@@ -107,7 +138,7 @@ public class guiManageAdmins {
 		frame.setBounds(100, 100, 723, 366);
 		frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
-	
+		/** Creating the visual components. **/
 		JLabel lblNewLabel = new JLabel("Managing "+targetAdmin.getUsername()+" Account");
 		JTextField nameTextField = new JTextField();
 		JTextField accountBalanceTextField = new JTextField();
@@ -126,19 +157,17 @@ public class guiManageAdmins {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				/** Storing the textfield data inside variables **/
 				String name = nameTextField.getText();
 				String accountBalance= accountBalanceTextField.getText();
 				String email = emailTextField.getText();
 				String password = passwordField.getText();
 				DatabaseHandlerHSQL db = DatabaseHandlerHSQL.getDatabase();
-				//if((accountBalance.matches("[0-9].*[0-9]+")) && (!db.checkExistanceInDB("useraccount", "username", name)) && (!db.checkExistanceInDB("useraccount", "email", email))){
-					
-				//}
 				/** String stores all the success messages and errors **/
 				StringBuffer errors = new StringBuffer();
 				/** Checking if balance string is correctly defined if so the balance will update **/
 				if(accountBalance.matches("[0-9].*[0-9]+")) {
-					targetAdmin.updateBalance(-targetAdmin.getCurrentBalance() + Double.parseDouble(accountBalance));
+					new ManageUsersAndAdmins().setBalance(accountBalance, targetAdmin);
 					errors.append("Updated account balance \n");
 				}else {
 					/** Appending an error message to show the user **/
@@ -148,7 +177,7 @@ public class guiManageAdmins {
 				/** Checking if the username is not taken! **/
 				if(!db.checkExistanceInDB("useraccount", "username", name)) {
 					/** Updating username **/
-					db.executeQuery("UPDATE FROM useraccount SET username = '"+name +"' WHERE user_id = '"+targetAdmin.getUserID()+"'");
+					new ManageUsersAndAdmins().changeUsername(name, targetAdmin);
 					errors.append("Updated username \n");
 				}else {
 					/** Appending an error message to show the user **/
@@ -157,7 +186,7 @@ public class guiManageAdmins {
 				/** Checking if the email is not taken! **/
 				if(!db.checkExistanceInDB("useraccount", "email", email)) {
 					/** Updating email **/
-					db.executeQuery("UPDATE FROM useraccount SET email = '"+email +"' WHERE user_id = '"+targetAdmin.getUserID()+"'");
+					new ManageUsersAndAdmins().changeEmail(email, targetAdmin);
 					errors.append("Updated email \n");
 
 				}else {
@@ -179,8 +208,10 @@ public class guiManageAdmins {
 				/** Checking if the user is banned**/
 				if(targetAdmin.isBanned()) {
 					message = "unbanned";
+					/** Unbanning the admin **/
 					targetAdmin.unBanUser();
 				}else {
+					/** Banning the admin **/
 					targetAdmin.banUser();
 				}
 				JOptionPane.showMessageDialog(new JFrame(), "You have " + message + " the user.", "Messages after updating", JOptionPane.ERROR_MESSAGE);
@@ -193,7 +224,7 @@ public class guiManageAdmins {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				/** Demoting the admin **/
+				/** Revoking the admin rank **/
 				if(DatabaseHandlerHSQL.getDatabase().demoteAdmin(admin)) {
 					JOptionPane.showMessageDialog(new JFrame(), admin.getUsername()+" has been demoted", "Messages after updating", JOptionPane.PLAIN_MESSAGE);
 				}else {
@@ -202,6 +233,7 @@ public class guiManageAdmins {
 				}
 			}
 		});
+		/** Setting all the components to display the admin's data **/
 		passwordField.setText(targetAdmin.getPassword());
 		emailTextField.setText(targetAdmin.getEmail());
 		accountBalanceTextField.setText(""+targetAdmin.getCurrentBalance());

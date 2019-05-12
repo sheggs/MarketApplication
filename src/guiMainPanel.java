@@ -14,22 +14,34 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
 public class guiMainPanel extends JFrame{
+	/** Initialising the variables **/
 	private static guiMainPanel window = null;
 	private static Login login = null;
 	private static PanelType panelType = null;
 	JFrame frame = null;
 	JPanel panel = null;
 	JPanel main_panel = null;
+	
+	/**
+	 * 
+	 * @param login The login of the user.
+	 */
 	public guiMainPanel(Login login) {
 		guiMainPanel.login = login;
+		/** Storing the frame in the fields **/
 		this.frame = this;
 		this.setVisible(true);
 		frame.setBounds(100, 100, 782, 595);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		panel = new JPanel();
 		panel.setBackground(SystemColor.textHighlight);
-		
+		/** Creating the title of the frame **/
+		JLabel lblMarketplace = new JLabel("MarketPlace");
+		lblMarketplace.setForeground(SystemColor.window);
+		lblMarketplace.setFont(new Font("Tahoma", Font.PLAIN, 38));
+		/** Creating a new JPanel **/
 		this.main_panel = new JPanel();
+		/** Setting up the group layout **/
 		GroupLayout groupLayout = new GroupLayout(frame.getContentPane());
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -44,14 +56,12 @@ public class guiMainPanel extends JFrame{
 				.addComponent(main_panel, GroupLayout.DEFAULT_SIZE, 556, Short.MAX_VALUE)
 				.addComponent(panel, GroupLayout.DEFAULT_SIZE, 556, Short.MAX_VALUE)
 		);
-		JLabel lblMarketplace = new JLabel("MarketPlace");
-		lblMarketplace.setForeground(SystemColor.window);
-		lblMarketplace.setFont(new Font("Tahoma", Font.PLAIN, 38));
+		/** Checking if the user is logged in **/
 		if(login == null) {
+			/** Setting the main_panel to display the login options**/
 			main_panel.setLayout(new guiLoginRegisterPanel().setSecondaryPanel(frame, panel, main_panel));
 		}else {
 		
-			
 
 		JButton btnBuyItems = new JButton("Buy Items");
 		btnBuyItems.addActionListener(new ActionListener() {
@@ -143,6 +153,7 @@ public class guiMainPanel extends JFrame{
 					.addGap(31))
 		);
 		if(login.getAdmin() == null) {
+			/** Setting all admin features as invisible since the logged in user is not an admin. **/
 			btnManageUsers.setVisible(false);
 			btnManageAdmins.setVisible(false);
 			btnGenerateCode.setVisible(false);
@@ -150,11 +161,18 @@ public class guiMainPanel extends JFrame{
 
 
 		}
+		/** Setting the grouplayout.**/
 		panel.setLayout(gl_panel);
 		}
+		/** Setting the grouplayout.**/
 		frame.getContentPane().setLayout(groupLayout);
 
 	}
+	/**
+	 * 
+	 * @param login
+	 * @return The frame of the object.
+	 */
 	public static guiMainPanel getFrame(Login login) {
 		if(window == null) {
 			window = new guiMainPanel(login);
@@ -213,11 +231,15 @@ public class guiMainPanel extends JFrame{
 		main_panel.setLayout(null);
 		main_panel.setLayout(new guiApproveProducts(login.getAdmin()).setSidePanel(login,frame, panel, this.main_panel));
 	}
+	/**
+	 * 
+	 * @return The panel the user is currently on.
+	 */
 	public PanelType getPanelType() {
 		return panelType;
 	}
 	public void refreshPanel() {
-			System.out.println(login);
+		/** Refreshing the panel by restarting the panels **/
 		if(this.panelType == PanelType.APPROVE_PRODUCT) {
 			main_panel.setLayout(new guiManageAdmins(login.getAdmin()).setSidePanel(login,frame, panel, this.main_panel));
 

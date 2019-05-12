@@ -17,11 +17,22 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
 public class guiManageUsers {
+	/** Initialising the variables **/
 	JPanel temp = new JPanel();
 	private Admin admin = null;
+	/**
+	 * 
+	 * @param admin The admin that wants to manage the admins 
+	 */
 	public guiManageUsers(Admin admin) {
 		this.admin = admin;
 	}
+	/**
+	 * 
+	 * @param login The login of the admin.
+	 * @param targetAdmin The admin you want to targer.
+	 * @param jb The temporary panel that will store this information.
+	 */
 	public void addUser(Login login,User user,JPanel jb) {
 		temp.setLayout(new GridLayout(0,1));
 		JButton btn = new JButton("Manage User");
@@ -39,8 +50,18 @@ public class guiManageUsers {
 		temp.add(btn);
 		jb.add(temp);
 	}
-	
+	/**
+	 * 
+	 * @param login The login object of the currently logged in admin/user.
+	 * @param frame The frame of the application.
+	 * @param panel Temporary panel.
+	 * @param main_panel The panel that stores all the components.
+	 * @return
+	 */
 	public GroupLayout setSidePanel(Login login,JFrame frame,JPanel panel,JPanel main_panel) {
+		/**
+		 * Creating the visible components
+		 */
 		JLabel manageUserTitle = new JLabel("Manage Users");
 		manageUserTitle.setFont(new Font("Tahoma", Font.PLAIN, 26));
 		
@@ -49,10 +70,11 @@ public class guiManageUsers {
 		/** Panel is a container for the user management **/
 		JPanel containerPanel = new JPanel();
 		
-		for(User user : ManageUsers.getTotalUsers()) {
+		for(User user : ManageUsersAndAdmins.getTotalUsers()) {
 			/** Appending each product data **/
 			addUser(login,user,containerPanel);
 		}
+		/** Adding the container panel to the scrollpane to make this scrollable **/
 		JScrollPane scrollPane = new JScrollPane(containerPanel);
 		GroupLayout groupLayout = new GroupLayout(frame.getContentPane());
 		groupLayout.setHorizontalGroup(
@@ -94,9 +116,14 @@ public class guiManageUsers {
 		return gl_main_panel;
 	
 	}
-	
+	/**
+	 * 
+	 * @param admin the admin that is logged in 
+	 * @param user The target user.
+	 */
 	
 	public void manageUserPanel(Admin admin,User user) {
+		/** Creating the frame that displays the user's details **/
 		JFrame frame = new JFrame();
 		frame.setVisible(true);
 		frame.setResizable(false);
@@ -104,7 +131,7 @@ public class guiManageUsers {
 		frame.setBounds(100, 100, 723, 366);
 		frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
-	
+		/** Creating the visual components. **/
 		JLabel lblNewLabel = new JLabel("Managing "+user.getUsername()+" Account");
 		JTextField nameTextField = new JTextField();
 		JTextField accountBalanceTextField = new JTextField();
@@ -124,19 +151,18 @@ public class guiManageUsers {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				/** Storing the textfield data inside variables **/
 				String name = nameTextField.getText();
 				String accountBalance= accountBalanceTextField.getText();
 				String email = emailTextField.getText();
 				String password = passwordField.getText();
 				DatabaseHandlerHSQL db = DatabaseHandlerHSQL.getDatabase();
-				//if((accountBalance.matches("[0-9].*[0-9]+")) && (!db.checkExistanceInDB("useraccount", "username", name)) && (!db.checkExistanceInDB("useraccount", "email", email))){
-					
-				//}
+
 				/** String stores all the success messages and errors **/
 				StringBuffer errors = new StringBuffer();
 				/** Checking if balance string is correctly defined if so the balance will update **/
 				if(accountBalance.matches("[0-9].*[0-9]+")) {
-					new ManageUsers().setBalance(accountBalance, user);
+					new ManageUsersAndAdmins().setBalance(accountBalance, user);
 					errors.append("Updated account balance \n");
 				}else {
 					/** Appending an error message to show the user **/
@@ -146,7 +172,7 @@ public class guiManageUsers {
 				/** Checking if the username is not taken! **/
 				if(!db.checkExistanceInDB("useraccount", "username", name)) {
 					/** Updating username **/
-					new ManageUsers().changeUsername(name, user);
+					new ManageUsersAndAdmins().changeUsername(name, user);
 					errors.append("Updated username \n");
 				}else {
 					/** Appending an error message to show the user **/
@@ -155,7 +181,7 @@ public class guiManageUsers {
 				/** Checking if the email is not taken! **/
 				if(!db.checkExistanceInDB("useraccount", "email", email)) {
 					/** Updating email **/
-					new ManageUsers().changeEmail(email, user);
+					new ManageUsersAndAdmins().changeEmail(email, user);
 					errors.append("Updated email \n");
 
 				}else {
@@ -177,8 +203,10 @@ public class guiManageUsers {
 				/** Checking if the user is banned**/
 				if(user.isBanned()) {
 					message = "unbanned";
+					/** Unbanning the user **/
 					user.unBanUser();
 				}else {
+					/** Banning the user **/
 					user.banUser();
 				}
 				JOptionPane.showMessageDialog(new JFrame(), "You have " + message + " the user.", "Messages after updating", JOptionPane.ERROR_MESSAGE);
@@ -193,17 +221,21 @@ public class guiManageUsers {
 			public void actionPerformed(ActionEvent e) {
 				/** Check if privilidge level only contains numbers **/
 				if(privilidgeLevel.getText().matches("[0-9]+")) {
+					/** Upgrading the users account into an admin account **/
 					if(DatabaseHandlerHSQL.getDatabase().upgradeAccount(user, admin, Integer.parseInt(privilidgeLevel.getText()))) {
+						/** Display a message dialog if the users account has been successfully upgraded **/
 						JOptionPane.showMessageDialog(new JFrame(), "SUCCESS! USER IS NOW AN ADMIN", "Messages after updating", JOptionPane.PLAIN_MESSAGE);
-						frame.dispose();
 					}else {
+					/** Display an error **/
 						JOptionPane.showMessageDialog(new JFrame(), "ERROR: Target privilidge level must be lower than yours! Or a database error has occured!", "Upgrade message", JOptionPane.ERROR_MESSAGE);
 					}
 				}else{
+					/** Display an error since the privilidge level is not formatted correctly **/
 					JOptionPane.showMessageDialog(new JFrame(), "ERROR: Your privilidge level is incorrectly formatted", "Upgrade message", JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		});
+		/** Filing the visual components with the users details **/
 		passwordField.setText(user.getPassword());
 		emailTextField.setText(user.getEmail());
 		accountBalanceTextField.setText(""+user.getCurrentBalance());

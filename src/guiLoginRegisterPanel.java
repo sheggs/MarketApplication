@@ -16,8 +16,18 @@ public class guiLoginRegisterPanel {
 	public guiLoginRegisterPanel( ) {
 	}
 	
-	
+	/**
+	 * 
+	 * @param login The login object of the currently logged in admin/user.
+	 * @param frame The frame of the application.
+	 * @param panel Temporary panel.
+	 * @param main_panel The panel that stores all the components.
+	 * @return
+	 */
 	public GroupLayout setSecondaryPanel(JFrame frame,JPanel panel,JPanel main_panel) {
+		/**
+		 * Initialising the variables needed, and creating the visual components.
+		 */
 		JTextField txtUsername = new JTextField();
 		txtUsername.setText("Username");
 		txtUsername.setColumns(10);
@@ -37,8 +47,12 @@ public class guiLoginRegisterPanel {
 		JTextField passwordLogin = new JTextField();
 		passwordLogin.setText("Password");
 		passwordLogin.setColumns(10);
+		JLabel lblRegisterAccount = new JLabel("Register Account");
+		lblRegisterAccount.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		
+		JLabel lblLoginAccount = new JLabel("Login Account");
 		JButton btnLogin = new JButton("login");
+		/** When the login button is pressed **/
 		btnLogin.addActionListener(new ActionListener() {
 			
 			@Override
@@ -47,14 +61,17 @@ public class guiLoginRegisterPanel {
 				Login login = new Login(email_login.getText(),passwordLogin.getText());
 				/** Check if the login credentials are correct **/
 				if(login.checkCredentials()) {
-					/** Disposing old frame and creating a new frame with the user logged in **/
+					/** Checking if the user is banned **/
 					if(login.getUser().isBanned()) {
+						/** Showing a banned message if the user is banned **/
 						JOptionPane.showMessageDialog(new JFrame(),"You are banned from this market!", "Marketplace - Message",JOptionPane.ERROR_MESSAGE);
 					}else {
+						/** Disposing old frame and creating a new frame with the user logged in **/
 						frame.dispose();
 						new guiMainPanel(login);
 					}
 				}else {
+					/** Showing an error message if the login credentials do not exist or match within the database **/
 					JOptionPane.showMessageDialog(new JFrame(),"Error login credentials incorrect!", "Marketplace - Message",JOptionPane.PLAIN_MESSAGE);
 
 				}
@@ -62,18 +79,22 @@ public class guiLoginRegisterPanel {
 		});
 		
 		JButton registerButton = new JButton("register");
+		/** When the register button is pressed **/
 		registerButton.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				/** Storing the text fields data inside variables **/
 				String email = txtEmail.getText();
 				String password =txtPassword.getText();
 				String username = txtUsername.getText();
 				/** Creating the user account **/
 				if(DatabaseHandlerHSQL.getDatabase().createAccount(username, email, password)) {
+					/** Shows a message that the account has been successfully created **/
 					JOptionPane.showMessageDialog(new JFrame(),"Succesful account creation", "Marketplace - Message",JOptionPane.PLAIN_MESSAGE);
 					
 				}else {
+					/** Shows a message that the credentials have already been used.**/
 					JOptionPane.showMessageDialog(new JFrame(),"Error credentials have already been used!", "Marketplace - Message",JOptionPane.ERROR_MESSAGE);
 
 				}
@@ -81,6 +102,9 @@ public class guiLoginRegisterPanel {
 				
 			}
 		});
+		/**
+		 * The GroupLayout for the main_panel.
+		 */
 		GroupLayout groupLayout = new GroupLayout(frame.getContentPane());
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -97,10 +121,7 @@ public class guiLoginRegisterPanel {
 		);
 
 		
-		JLabel lblRegisterAccount = new JLabel("Register Account");
-		lblRegisterAccount.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		
-		JLabel lblLoginAccount = new JLabel("Login Account");
+	
 		lblLoginAccount.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		GroupLayout gl_main_panel = new GroupLayout(main_panel);
 		gl_main_panel.setHorizontalGroup(

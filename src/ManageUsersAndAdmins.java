@@ -2,9 +2,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class ManageUsers {
+public class ManageUsersAndAdmins {
 
-	public ManageUsers() {
+	public ManageUsersAndAdmins() {
 	}
 	/**
 	 * 

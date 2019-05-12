@@ -19,7 +19,14 @@ public class guiRegisterProduct {
 	public guiRegisterProduct( ) {
 	}
 	
-	
+	/**
+	 * 
+	 * @param login The login object of the currently logged in admin/user.
+	 * @param frame The frame of the application.
+	 * @param panel Temporary panel.
+	 * @param main_panel The panel that stores all the components.
+	 * @return
+	 */
 	public GroupLayout setSecondaryPanel(Login login,JFrame frame,JPanel panel,JPanel main_panel) {
 		GroupLayout groupLayout = new GroupLayout(frame.getContentPane());
 		groupLayout.setHorizontalGroup(
@@ -36,7 +43,7 @@ public class guiRegisterProduct {
 					.addComponent(panel, GroupLayout.DEFAULT_SIZE, 556, Short.MAX_VALUE)
 			);
 			
-			
+			/** Creating the form to add a new product **/
 			JTextField txtPrice = new JTextField();
 			txtPrice.setText("Asking Price");
 			txtPrice.setColumns(10);
@@ -56,16 +63,20 @@ public class guiRegisterProduct {
 			JButton submitbutton = new JButton("Submit Product");
 			submitbutton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					// Initalising database
+					// Initialising database
 					DatabaseHandlerHSQL db = DatabaseHandlerHSQL.getDatabase();
 					// Getting required variables.
 					String username = txtName.getText();
 					String description = txtDesc.getText();
 					/** Checking if the price is all numbers **/
 					if(txtPrice.getText().matches("[0-9]+")) {
+						/** Getting the price **/
 						int price = Integer.parseInt(txtPrice.getText());
+						/** Restarting connection to the database **/
 						db.reestablishConnection();
+						/** Registering product **/
 						Products.registerProduct(login, username,  price, description);
+						/** Displaying successful message **/
 						JOptionPane.showMessageDialog(new JFrame(), "Product is officially on the market.", "Successful.",JOptionPane.INFORMATION_MESSAGE);
 
 					}else {

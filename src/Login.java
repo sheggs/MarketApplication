@@ -4,7 +4,7 @@ import java.sql.SQLException;
 import javax.swing.JFrame;
 
 public class Login{
-	
+	/** Initalising the variables **/
 	private int userID = 0;
 	private String email = null;
 	private String password = null;

@@ -16,33 +16,51 @@ import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
 public class guiBasket {
+	/** Initialising fields **/
 	private Login login = null;
+	/**
+	 * 
+	 * @param login The login of the currently logged in user.
+	 */
 	public guiBasket(Login login ) {
 		this.login = login;
 	}
 	
+	/**
+	 * 
+	 * @param product The product object that the user wants to buy
+	 * @param panel The panel that will store the product listing components.
+	 */
 	public void basketItems(Products product,JPanel panel) {
 		JPanel temp = new JPanel();
+		/** The label stores the products details and information.**/
 		JLabel l = new JLabel(product.getName() + " Desc: " + product.getDescription() + " Price £" +product.getPrice());
 		l.setAlignmentX(Component.CENTER_ALIGNMENT);
 		temp.add(l);
 		panel.add(temp);
 	}
+	/**
+	 * 
+	 * @param main_panel The panel that will store all the components.
+	 * @return A GroupLayout of the components.
+	 */
 	public GroupLayout setSecondaryPanel(JPanel main_panel) {
+		/** Creating the title **/
 		JLabel basketTitle = new JLabel("Shopping Basket");
 		basketTitle.setFont(new Font("Tahoma", Font.PLAIN, 26));
-		
+		/** Panel stores the items in the basket **/
 		JPanel itemsInBasket = new JPanel();
-		
+		/** Promotional code section **/
 		JTextField promoSection = new JTextField();
 		promoSection.setColumns(10);
-		
 		JLabel lblInsertPromotionalCode = new JLabel("Insert promotional code");
 		
+		/** Purchase button to add product to the basket **/
 		JButton purchaseButton = new JButton("Purchase");
 
 		JLabel totalPriceLabel = new JLabel("Total: \u00A30");
 		totalPriceLabel.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		/** setting up the grouplayout. **/
 		GroupLayout gl_main_panel = new GroupLayout(main_panel);
 		gl_main_panel.setHorizontalGroup(
 			gl_main_panel.createParallelGroup(Alignment.LEADING)
@@ -87,9 +105,13 @@ public class guiBasket {
 								.addComponent(totalPriceLabel, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE))))
 					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 		);
+		/**
+		 * Looping through the items in the basket and displaying them.
+		 */
 		for(Products p : this.login.getUser().getBasket().getBasket()) {
 			basketItems(p, itemsInBasket);
 		}
+		/** Shows the total price **/
 		totalPriceLabel.setText("Total £"+this.login.getUser().getBasket().getTotalPrice());
 		purchaseButton.addActionListener(new ActionListener() {
 			
@@ -121,6 +143,9 @@ public class guiBasket {
 						frame.dispose();
 					}
 				});
+				/**
+				 * Displaying the details of the purchase
+				 */
 				JLabel lblNewLabel = new JLabel("Basket Price: +£"+login.getUser().getBasket().getTotalPrice());
 				lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 15));
 				
@@ -134,15 +159,18 @@ public class guiBasket {
 				lblTotalPrice.setFont(new Font("Tahoma", Font.PLAIN, 15));
 				
 				JButton purchaseButton = new JButton("Purchase");
+				/** Purchases the products **/
 				purchaseButton.addActionListener(new ActionListener() {
 					
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						System.out.println(login.getUser().getCurrentBalance());
+						/** Purchasing basket items **/
 						if(login.getUser().purchaseBasket(promoCode)) {
+							/** Show a success message in a new frame **/
 							JOptionPane.showMessageDialog(new JFrame(),"Success. You now own the items. Your balance is £" +login.getUser().getCurrentBalance(), "Marketplace - Message",JOptionPane.PLAIN_MESSAGE);
 
 						}else {
+							/** Show an error message in a new frame **/
 							JOptionPane.showMessageDialog(new JFrame(),"A problem occured! Maybe you do not have enough money. Your balance is £"+login.getUser().getCurrentBalance(), "Marketplace - Message",JOptionPane.ERROR_MESSAGE);
 
 						}

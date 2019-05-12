@@ -26,29 +26,49 @@ public class guiYourAccount {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public void addProduct(Login login,Products product,JPanel jb) {
+	/**
+	 * 
+	 * @param login The login of the user
+	 * @param product The product the user has ptu on the market
+	 * @param tempPanel Temporary panel that stores the product informations.
+	 */
+	public void addProduct(Login login,Products product,JPanel tempPanel) {
+		/** Setting the gridlayout **/
 		temp.setLayout(new GridLayout(0,1));
+		/** Creating a button to remove the product **/
 		JButton btn = new JButton("Remove product");
 		btn.setAlignmentX(Component.LEFT_ALIGNMENT);
 		btn.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				/** Removing the product **/
 				if(product.removeProduct()) {
+					/** Success message is displayed **/
 					JOptionPane.showMessageDialog(new JFrame(), "Product has been removed from the market!", "MarketPlace",JOptionPane.PLAIN_MESSAGE);
 				}else {
+					/** Error message is displayed **/
 					JOptionPane.showMessageDialog(new JFrame(), "Unknown Error", "Error",JOptionPane.PLAIN_MESSAGE);
 				}
 			}
 		});
+		/** Label to show the details about the product **/
 		JLabel l = new JLabel(product.getName() + " Desc: " + product.getDescription() + " Price £" +product.getPrice());
 		l.setAlignmentX(Component.CENTER_ALIGNMENT);
 		temp.add(l);
 		temp.add(btn);
-		jb.add(temp);
+		tempPanel.add(temp);
 	}
-	
+	/**
+	 * 
+	 * @param login The login object of the currently logged in admin/user.
+	 * @param frame The frame of the application.
+	 * @param panel Temporary panel.
+	 * @param main_panel The panel that stores all the components.
+	 * @return
+	 */
 	public GroupLayout setSidePanel(Login login,JFrame frame,JPanel panel,JPanel main_panel) {
+		/** Initialising the components **/
 		JTextField promoCode = new JTextField();
 		JButton confirmVoucherBtn = new JButton("Confirm");
 		JLabel yourDetailsLabel = new JLabel("Your Details");	
@@ -58,19 +78,21 @@ public class guiYourAccount {
 		
 		JTextArea productsPurchasedTextArea = new JTextArea();
 		JTextArea productsWaitingApprovalAndSold = new JTextArea();
-		
+		/** When the confirm top up voucher button is pressed **/
 		confirmVoucherBtn.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				PromotionalVoucherCodes topUp = new PromotionalVoucherCodes();
-				// Apply the code
+				// Apply the top up code
 				if(topUp.applyTopUpCode(login,promoCode.getText())){
+					/** Show a success message and refresh the balance **/
 					JOptionPane.showMessageDialog(new JFrame(), "Successful application. Your balance should be updated", "TopUp Voucher",JOptionPane.PLAIN_MESSAGE);
 					balanceLabel.setText("Balance: £"+login.getUser().getCurrentBalance());
 				}
 				// If there is an issue with the code.
 				else {
+					/** Show an error message **/
 					JOptionPane.showMessageDialog(new JFrame(),"Code has been used or is invalid." , "TopUp Voucher",JOptionPane.ERROR_MESSAGE);
 
 				}
@@ -147,7 +169,7 @@ public class guiYourAccount {
 				.addComponent(main_panel, GroupLayout.DEFAULT_SIZE, 556, Short.MAX_VALUE)
 				.addComponent(panel, GroupLayout.DEFAULT_SIZE, 556, Short.MAX_VALUE)
 		);
-		
+		/** Filling out the titles and labels **/
 		JLabel yourAccountTitle = new JLabel("Your account");
 		yourAccountTitle.setFont(new Font("Tahoma", Font.PLAIN, 26));
 		
