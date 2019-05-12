@@ -3,12 +3,22 @@ import java.sql.SQLException;
 import java.util.Date;
 
 public class User {
+	/**
+	 * Initalising variables
+	 */
 	private String username;
 	private int userID;
 	private String email;
 	private Date date;
 	private boolean admin;
 	private ShoppingBasket basket;
+	/**
+	 * 
+	 * @param userID The users id
+	 * @param username The username.
+	 * @param email The email of the user.
+	 * @param date The date of creation.
+	 */
 	public User(int userID, String username, String email, Date date) {
 		this.username = username;
 		this.userID = userID;
@@ -17,21 +27,45 @@ public class User {
 		this.admin = admin;
 		this.basket = new ShoppingBasket();
 	}
+	/**
+	 * 
+	 * @return The date the account was created
+	 */
 	public Date getDate() {
 		return this.date;
 	}
+	/**
+	 * 
+	 * @return The shopping basket of the user.
+	 */
 	public ShoppingBasket getBasket() {
 		return this.basket;
 	}
+	/**
+	 * 
+	 * @return a boolean value whether the user is banned.
+	 */
 	public boolean isAdmin() {
 		return this.admin;
 	}
+	/**
+	 * 
+	 * @return The email of the user.
+	 */
 	public String getEmail() {
 		return this.email;
 	}
+	/**
+	 * 
+	 * @return the user's id
+	 */
 	public int getUserID() {
 		return this.userID;
 	}
+	/**
+	 * 
+	 * @return the user's username.
+	 */
 	public String getUsername() {
 		return this.username;
 	}
@@ -80,12 +114,18 @@ public class User {
 		}
 		return password;
 	}
+	/**
+	 * 
+	 * @return A boolean value whether the user is banned
+	 */
 	public boolean isBanned() {
+		/** Querying the database for the user **/
 		DatabaseHandlerHSQL db = DatabaseHandlerHSQL.getDatabase();
 		ResultSet results = db.Query("SELECT * FROM useraccount WHERE user_id = '" + this.userID +"'");
 		boolean banned = false;
 		try {
 			while(results.next()) {
+				// Checking if the user is banned. If so set the banned variable to ture
 				if(results.getInt("isBanned") == 1){
 					banned = true;
 				}
@@ -98,26 +138,40 @@ public class User {
 		return banned;
 	}
 	
+	/**
+	 * 
+	 * @return The current balance of the user.
+	 */
 	public double getCurrentBalance() {
+		/** Querying the user in the database **/
 		DatabaseHandlerHSQL db = DatabaseHandlerHSQL.getDatabase();
 		ResultSet results = db.Query("SELECT * FROM useraccount WHERE user_id = '" + this.userID +"'");
+		/** Initialising the balance variable **/
 		double balance = 0;
 		try {
 			while(results.next()) {
+				/** Setting the balance variable to the balance of the user **/
 				balance =  results.getDouble("balance");
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			balance = 0;
 		}
 		return balance;
 	}
+	
+	/**
+	 * 
+	 * @param amount The amount you want to increase or decrease the users balance.
+	 * @return A boolean value whether this has been successful.
+	 */
 	public boolean updateBalance(double amount) {
 		DatabaseHandlerHSQL db = DatabaseHandlerHSQL.getDatabase();
+		/** Checking if this makes the users balance below 0 **/
 		if((getCurrentBalance() + amount) < 0) {
 			return false;
 		}else {
+			/** Updating the users balance **/
 			ResultSet results = db.Query("UPDATE useraccount SET balance = '" + (getCurrentBalance() + amount) + "' WHERE user_id = '" + getUserID() + "'");
 			return true;
 		}
@@ -156,13 +210,6 @@ public class User {
 		return successful;
 	}
 	
-//	public static void main(String[] args) {
-//		Login login = new Login("Password","Password");
-//		User user = login.getUser();
-//		System.out.println(user.updateBalance(100));
-//
-//		System.out.println(user.getCurrentBalance());
-//	}
 	
 
 }

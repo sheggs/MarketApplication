@@ -63,6 +63,34 @@ public class ManageUsers {
 		return listOfAdmins;
 	}
 	
+	/**
+	 * 
+	 * @param futureName The name you want to override the user's name
+	 * @param user The user who you are targeting.
+	 */
+	public void changeUsername(String futureName, User user) {
+		// Executing a query to change the username.
+		DatabaseHandlerHSQL.getDatabase().executeQuery("UPDATE useraccount SET username = '"+futureName +"' WHERE user_id = '"+user.getUserID()+"'");
+	}
+	/**
+	 * 
+	 * @param futureEmail The email you want to override the user's email
+	 * @param user The user who you are targeting.
+	 */
+	public void changeEmail(String futureEmail, User user) {
+		// Executing a query to change the email.
+		DatabaseHandlerHSQL.getDatabase().executeQuery("UPDATE useraccount SET email = '"+futureEmail +"' WHERE user_id = '"+user.getUserID()+"'");
+	}
+	
+	/**
+	 * 
+	 * @param amount The amount you want to set the users wallet.
+	 * @param user The user you are targetting.
+	 */
+	public void setBalance(String amount, User user) {
+		user.updateBalance(-user.getCurrentBalance() + Double.parseDouble(amount));
+	}
+	
 
 
 }

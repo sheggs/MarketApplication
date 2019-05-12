@@ -136,7 +136,7 @@ public class guiManageUsers {
 				StringBuffer errors = new StringBuffer();
 				/** Checking if balance string is correctly defined if so the balance will update **/
 				if(accountBalance.matches("[0-9].*[0-9]+")) {
-					user.updateBalance(-user.getCurrentBalance() + Double.parseDouble(accountBalance));
+					new ManageUsers().setBalance(accountBalance, user);
 					errors.append("Updated account balance \n");
 				}else {
 					/** Appending an error message to show the user **/
@@ -146,7 +146,7 @@ public class guiManageUsers {
 				/** Checking if the username is not taken! **/
 				if(!db.checkExistanceInDB("useraccount", "username", name)) {
 					/** Updating username **/
-					db.executeQuery("UPDATE FROM useraccount SET username = '"+name +"' WHERE user_id = '"+user.getUserID()+"'");
+					new ManageUsers().changeUsername(name, user);
 					errors.append("Updated username \n");
 				}else {
 					/** Appending an error message to show the user **/
@@ -155,7 +155,7 @@ public class guiManageUsers {
 				/** Checking if the email is not taken! **/
 				if(!db.checkExistanceInDB("useraccount", "email", email)) {
 					/** Updating email **/
-					db.executeQuery("UPDATE FROM useraccount SET email = '"+email +"' WHERE user_id = '"+user.getUserID()+"'");
+					new ManageUsers().changeEmail(email, user);
 					errors.append("Updated email \n");
 
 				}else {
